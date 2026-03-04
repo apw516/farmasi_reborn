@@ -23,7 +23,7 @@
                 @foreach ($data_detail as $d)
                     <tr>
                         <td>{{ $d->nama_barang }} {{ $d->nama_tarif }}</td>
-                        <td>{{ $d->kategori_resep }}</td>
+                        <td>@if($d->tipe_anestesi == '80' ) REGULER @elseif($d->tipe_anestesi == '81') KRONIS @endif</td>
                         <td>{{ $d->jumlah_layanan }}</td>
                         <td>Rp {{ number_format($d->total_tarif, 0, ',', '.') }}</td>
                         <td>Rp {{ number_format($d->total_layanan, 0, ',', '.') }}</td>

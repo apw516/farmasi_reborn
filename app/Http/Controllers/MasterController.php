@@ -83,38 +83,74 @@ class MasterController extends Controller
     }
     public function ambilbarangdpho(Request $request)
     {
+        // if ($request->ajax()) {
+        //     $data = DB::table('apt_online_ref_dpho as bpjs')
+        //         ->left('master_barang_x_master_obat_bpjs as map', 'bpjs.kodeobat', '=', 'map.kode_obat_bpjs')
+        //         ->left('mt_barang as simrs', 'map.kode_barang', '=', 'simrs.kode_barang')
+        //         ->left('mt_set_barang_supplier as sett', 'map.kode_barang', '=', 'sett.kode_barang')
+        //         ->left('mt_supplier', 'sett.kode_supplier', '=', 'mt_supplier.kode_supplier')
+        //         ->select([
+        //             'simrs.kode_barang',
+        //             'bpjs.kodeobat',
+        //             'bpjs.namaobat',
+        //             'bpjs.restriksi',
+        //             'bpjs.generik',
+        //             'mt_supplier.nama_supplier',
+        //             'mt_supplier.alamat_supplier',
+        //             'map.kode_barang as kode_simrs', // Ambil kode mapping jika ada
+        //             'simrs.nama_barang as nama_simrs' // Ambil nama dari tabel SIMRS
+        //         ])
+        //         ->orderBy('bpjs.id', 'desc');
+        //     return DataTables::of($data)
+        //         ->addIndexColumn()
+        //         // Kita tambahkan kolom status secara logic di Server Side
+        //         ->addColumn('status_mapping', function ($row) {
+        //             if (empty($row->kode_simrs)) {
+        //                 return '<span class="badge badge-danger">Belum Dimapping</span>';
+        //             }
+        //             return '<span class="badge badge-success">Termapping: ' . $row->nama_simrs . '</span>';
+        //         })
+        //         ->addColumn('aksi', function ($row) {
+        //             return '<button class="btn btn-sm btn-primary btn-pilih-bpjs" data-kode="' . $row->kodeobat . '">Pilih</button>';
+        //         })
+        //         ->rawColumns(['status_mapping', 'aksi']) // Agar HTML dirender oleh browser
+        //         ->make(true);
+        // }
+
         if ($request->ajax()) {
             $data = DB::table('apt_online_ref_dpho as bpjs')
-                ->join('master_barang_x_master_obat_bpjs as map', 'bpjs.kodeobat', '=', 'map.kode_obat_bpjs')
-                ->join('mt_barang as simrs', 'map.kode_barang', '=', 'simrs.kode_barang')
-                ->join('mt_set_barang_supplier as sett', 'map.kode_barang', '=', 'sett.kode_barang')
-                ->join('mt_supplier', 'sett.kode_supplier', '=', 'mt_supplier.kode_supplier')
+                ->Join('master_barang_x_master_obat_bpjs as map', 'bpjs.kodeobat', '=', 'map.kode_obat_bpjs')
+                ->Join('mt_barang as simrs', 'map.kode_barang', '=', 'simrs.kode_barang')
                 ->select([
-                    'simrs.kode_barang',
+                    'bpjs.id',
                     'bpjs.kodeobat',
                     'bpjs.namaobat',
                     'bpjs.restriksi',
                     'bpjs.generik',
-                    'mt_supplier.nama_supplier',
-                    'mt_supplier.alamat_supplier',
-                    'map.kode_barang as kode_simrs', // Ambil kode mapping jika ada
-                    'simrs.nama_barang as nama_simrs' // Ambil nama dari tabel SIMRS
+                    'map.kode_barang as kode_simrs', // Mengecek apakah sudah dimapping
+                    'simrs.nama_barang as nama_simrs', // Mengambil nama barang dari SIMRS
+                    'simrs.kode_barang' // Kode barang asli dari tabel SIMRS
                 ])
                 ->orderBy('bpjs.id', 'desc');
 
             return DataTables::of($data)
                 ->addIndexColumn()
-                // Kita tambahkan kolom status secara logic di Server Side
+                // Logika status mapping
                 ->addColumn('status_mapping', function ($row) {
                     if (empty($row->kode_simrs)) {
-                        return '<span class="badge badge-danger">Belum Dimapping</span>';
+                        return '<span class="badge bg-danger">Belum Dimapping</span>';
                     }
-                    return '<span class="badge badge-success">Termapping: ' . $row->nama_simrs . '</span>';
+                    return '<span class="badge bg-success">Termapping: ' . $row->nama_simrs . '</span>';
                 })
+                // Tombol aksi
                 ->addColumn('aksi', function ($row) {
-                    return '<button class="btn btn-sm btn-primary btn-pilih-bpjs" data-kode="' . $row->kodeobat . '">Pilih</button>';
+                    return '<button class="btn btn-sm btn-primary btn-pilih-bpjs" 
+                        data-kode="' . $row->kodeobat . '" 
+                        data-nama="' . $row->namaobat . '">
+                        <i class="fas fa-check"></i> Pilih
+                    </button>';
                 })
-                ->rawColumns(['status_mapping', 'aksi']) // Agar HTML dirender oleh browser
+                ->rawColumns(['status_mapping', 'aksi'])
                 ->make(true);
         }
     }
@@ -202,18 +238,19 @@ class MasterController extends Controller
                     'tgl_entry' => $this->get_now(),
                     'pic' => auth()->user()->id . ' | ' . auth()->user()->nama
                 ];
+                // dd($datamapping);
                 $cek = db::select('select id from master_barang_x_master_obat_bpjs where kode_barang = ?', [$d['kodebarang']]);
                 if (count($cek) > 0) {
                     model_master_barang_x_master_bpjs::where('id', $cek[0]->kode_barang)->delete();
                 }
                 model_master_barang_x_master_bpjs::create($datamapping);
-                $data = [
-                    'kode' => 200,
-                    'message' => 'Sukses, data berhasil disimpan ...'
-                ];
-                echo json_encode($data);
-                die;
             }
+            $data = [
+                'kode' => 200,
+                'message' => 'Sukses, data berhasil disimpan ...'
+            ];
+            echo json_encode($data);
+            die;
         } catch (\Exception $e) {
             $err = $e->getMessage();
             $data = [

@@ -30,11 +30,12 @@ class VclaimController extends Controller
     {
         // 0002083363874
         // 1018R0010226V000001
+        //0000450059905
         $get_sep = [
             "request" => [
                 "t_sep" => [
                     "noKartu" => "0002083363874",
-                    "tglSep" => "2026-03-02",
+                    "tglSep" => "2026-03-03",
                     "ppkPelayanan" => "1018R001",
                     "jnsPelayanan" => "2",
                     "klsRawat" => [

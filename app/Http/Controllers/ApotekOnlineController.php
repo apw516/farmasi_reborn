@@ -60,10 +60,12 @@ class ApotekOnlineController extends dashboarController
         $v = new MODEL_APOTEK_ONLINE();
         $nosep = $request->nosep;
         try {
-            $DATA = $v->carikunjungansep($nosep);
+            $DATA = $v->daftar_pelayanan_obat($nosep);
+            // dd($DATA);
+            // $DATA = $v->carikunjungansep($nosep);
             // dd($DATA);
             if ($DATA->metaData->code == 200 && $DATA->metaData->message == 'OK') {
-                return view('apotekonline.detailsep', compact([
+                return view('apotekonline.detailsepapotek', compact([
                     'DATA'
                 ]));
             } else {
@@ -104,10 +106,11 @@ class ApotekOnlineController extends dashboarController
         $v = new MODEL_APOTEK_ONLINE();
         $awal = $request->tglawal;
         $akhir = $request->tglakhir;
+        $jenistanggal = $request->jenistanggal;
         $data = [
             'kdppk' => '0125A016',
             'KdJnsObat' => '0',
-            'JnsTgl' => 'TGLPELSJP',
+            'JnsTgl' => $jenistanggal,
             'TglMulai' => $awal,
             'TglAkhir' => $akhir,
         ];
@@ -170,7 +173,6 @@ class ApotekOnlineController extends dashboarController
         $nomorkartu = $request->nomorkartu;
         try {
             $DATA = $v->riwayat_obat($awal, $akhir, $nomorkartu);
-            // dd($DATA);
             if ($DATA->metaData->code == 200 && $DATA->metaData->message == 'OK') {
                 return view('apotekonline.tabel_riwayat_pelayanan_peserta', compact([
                     'DATA'
@@ -181,6 +183,36 @@ class ApotekOnlineController extends dashboarController
         } catch (\Exception $e) {
             return view('apotekonline.pesaneror');
         }
+    }
+    public function ambilriwayat_pelayananpesertabyrs(Request $request)
+    {
+        $awal = $request->tglawal;
+        $akhir = $request->tglakhir;
+        $rm = $request->rm;
+        $data1 = db::select("SELECT kode_kunjungan,tgl_masuk,fc_nama_unit1(kode_unit) AS unit_tujuan,fc_NAMA_PARAMEDIS1(kode_paramedis) AS nama_dokter
+        FROM ts_kunjungan WHERE  no_rm = ? ORDER BY kode_kunjungan DESC",[$rm]);
+
+        // dd($data1);
+        $data = db::select("SELECT a.`kode_kunjungan`
+        ,a.`tgl_masuk`
+        ,fc_nama_unit1(a.`kode_unit`) AS unit_kunjungan
+        ,fc_nama_unit1(b.kode_unit) AS unit_penerima
+        ,fc_nama_barang(c.`kode_barang`) AS nama_barang
+        ,c.`jumlah_layanan`
+        ,c.`aturan_pakai`
+        ,c.`tipe_anestesi`
+        ,a.`status_kunjungan`
+        ,b.`status_layanan`
+        ,c.`status_layanan_detail`
+        FROM ts_kunjungan a 
+        INNER JOIN ts_layanan_header b ON a.`kode_kunjungan` = b.kode_kunjungan
+        INNER JOIN ts_layanan_detail c ON b.`id` = c.`row_id_header`
+        WHERE a.no_rm = ? 
+        AND c.`kode_barang` IS NOT NULL
+        ORDER BY kode_kunjungan DESC",[$rm]);
+        return view('Depofarmasi.riwayatobatrs',compact([
+            'data1','data'
+        ]));
     }
     function indexdataklaim()
     {

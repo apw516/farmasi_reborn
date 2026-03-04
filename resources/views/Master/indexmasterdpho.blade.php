@@ -36,8 +36,8 @@
                                     <th>Nama Generik Lengkap ( BPJS )</th>
                                     <th>Nama Generik</th>
                                     <th>Restriki</th>
-                                    <th>Supplier</th>
-                                    <th>Alamat Supplier</th>
+                                    {{-- <th>Supplier</th>
+                                    <th>Alamat Supplier</th> --}}
                                 </tr>
                             </thead>
                             <tbody>
@@ -78,15 +78,15 @@
                     {
                         data: 'restriksi',
                         name: 'restriksi'
-                    },
-                    {
-                        data: 'nama_supplier',
-                        name: 'mt_supplier.nama_supplier'
-                    },
-                    {
-                        data: 'alamat_supplier',
-                        name: 'mt_supplier.alamat_supplier'
                     }
+                    // {
+                    //     data: 'nama_supplier',
+                    //     name: 'mt_supplier.nama_supplier'
+                    // },
+                    // {
+                    //     data: 'alamat_supplier',
+                    //     name: 'mt_supplier.alamat_supplier'
+                    // }
                 ]
             });
         });

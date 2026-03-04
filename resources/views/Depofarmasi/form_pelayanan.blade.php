@@ -19,6 +19,12 @@
                         <td colspan="2"> Dokter : {{ $data_kunjungan[0]->dokter }}</td>
                     </tr>
                 </table>
+                <div class="btn-group mt-2" role="group" aria-label="Basic example">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                        data-bs-target="#modalriwayatobatrs"><i class="bi bi-search"></i> Riwayat Obat RS</button>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                        data-bs-target="#modalriwayatobatbpjs"><i class="bi bi-search"></i> Riwayat Obat BPJS</button>
+                </div>
             </div>
         </div>
     </div>
@@ -303,6 +309,101 @@
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="modalriwayatobatrs" tabindex="-1" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Riwayat Pemberian Obat Oleh Rumah Sakit</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label for="exampleInputEmail1" class="form-label">Nomor RM</label>
+                            <input type="text" class="form-control" id="nomorrmcari" aria-describedby="emailHelp"
+                                value="{{ $mt_pasien[0]->no_rm }}">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            <label for="exampleInputEmail1" class="form-label">Tanggal Awal</label>
+                            <input type="date" class="form-control" id="tanggalawalcaribyrs"
+                                aria-describedby="emailHelp" value="{{ $date_start }}">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            <label for="exampleInputEmail1" class="form-label">Tanggal Akhir</label>
+                            <input type="date" class="form-control" id="tanggalakhircaribyrs"
+                                aria-describedby="emailHelp" value="{{ $date_start }}">
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-success" style="margin-top:32px" onclick="tampilkanriwayatrs()"><i
+                                class="bi bi-search" style="margin-right:12px"></i></button>
+                    </div>
+                </div>
+                <div class="v_r_rs">
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="modalriwayatobatbpjs" tabindex="-1" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Riwayat Pemberian Obat Oleh BPJS</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label for="exampleInputEmail1" class="form-label">Nomor Kartu</label>
+                            <input type="text" class="form-control" id="nomorkartu" aria-describedby="emailHelp"
+                                value="{{ $mt_pasien[0]->no_Bpjs }}">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            <label for="exampleInputEmail1" class="form-label">Tanggal Awal</label>
+                            <input type="date" class="form-control" id="tanggalawalcari"
+                                aria-describedby="emailHelp" value="{{ $date_start }}">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            <label for="exampleInputEmail1" class="form-label">Tanggal Akhir</label>
+                            <input type="date" class="form-control" id="tanggalakhircari"
+                                aria-describedby="emailHelp" value="{{ $date_start }}">
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-success" style="margin-top:32px" onclick="tampilkanriwayatbpjs()"><i
+                                class="bi bi-search" style="margin-right:12px"></i></button>
+                    </div>
+                </div>
+                <div class="v_r_bpjs">
+
                 </div>
             </div>
             <div class="modal-footer">
@@ -664,6 +765,7 @@
         e.preventDefault();
         $(this).closest('.row').remove();
     });
+
     function prosesracikan() {
         spinner_on()
         var dataheader = $('.form_header_racikan').serializeArray();
@@ -832,5 +934,55 @@
         container.find('input:checkbox, input:radio').prop('checked', false);
         container.find('.is-invalid').removeClass('is-invalid');
         container.find('.text-danger').empty();
+    }
+
+    function tampilkanriwayatbpjs() {
+        nomorkartu = $('#nomorkartu').val()
+        tglawal = $('#tanggalawalcari').val()
+        tglakhir = $('#tanggalakhircari').val()
+        spinner_on()
+        $.ajax({
+            type: 'post',
+            data: {
+                _token: "{{ csrf_token() }}",
+                tglawal,
+                tglakhir,
+                nomorkartu
+            },
+            url: '<?= route('ambilriwayat_pelayananpeserta') ?>',
+            error: function(response) {
+                spinner_off()
+                alert('error')
+            },
+            success: function(response) {
+                spinner_off()
+                $('.v_r_bpjs').html(response);
+            }
+        });
+    }
+
+    function tampilkanriwayatrs() {
+        rm = $('#nomorrmcari').val()
+        tglawal = $('#tanggalawalcaribyrs').val()
+        tglakhir = $('#tanggalakhircaribyrs').val()
+        spinner_on()
+        $.ajax({
+            type: 'post',
+            data: {
+                _token: "{{ csrf_token() }}",
+                tglawal,
+                tglakhir,
+                rm
+            },
+            url: '<?= route('ambilriwayat_pelayananpesertabyrs') ?>',
+            error: function(response) {
+                spinner_off()
+                alert('error')
+            },
+            success: function(response) {
+                spinner_off()
+                $('.v_r_rs').html(response);
+            }
+        });
     }
 </script>

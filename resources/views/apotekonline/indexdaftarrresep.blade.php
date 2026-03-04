@@ -31,6 +31,15 @@
                         </div>
                     </div>
                     <div class="col-md-3">
+                        <div class="mb-3">
+                            <label for="exampleInputEmail1" class="form-label">Jenis Tanggal</label>
+                            <select class="form-select" aria-label="Default select example" id="jenistanggal" name="jenistanggal">
+                                <option value="TGLPELSJP">Tanggal Pelayanan</option>
+                                <option value="TGLRSP">Tanggal Resep</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
                         <button class="btn btn-success" style="margin-top:32px" onclick="caridaftarresep()"><i
                                 class="bi bi-search" style="margin-right:12px"></i> Tampilkan Daftar</button>
                     </div>
@@ -57,13 +66,15 @@
         function caridaftarresep() {
             tglawal = $('#tanggalawal').val()
             tglakhir = $('#tanggalakhir').val()
+            jenistanggal = $('#jenistanggal').val()
             spinner_on()
             $.ajax({
                 type: 'post',
                 data: {
                     _token: "{{ csrf_token() }}",
                     tglawal,
-                    tglakhir
+                    tglakhir,
+                    jenistanggal
                 },
                 url: '<?= route('caridaftarresep_apotekonline') ?>',
                 error: function(response) {

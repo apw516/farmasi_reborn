@@ -43,6 +43,20 @@
                         <p>Riwayat Pelayanan</p>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a href="{{ route('indexriwayatretur') }}"
+                        class="nav-link @if ($menu == 'indexriwayatretur') active @endif">
+                        <i class="nav-icon bi bi-file-bar-graph-fill"></i>
+                        <p>Riwayat Retur Pelayanan</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('indexriwayatkartustok') }}"
+                        class="nav-link @if ($menu == 'indexriwayatkartustok') active @endif">
+                        <i class="nav-icon bi bi-file-bar-graph-fill"></i>
+                        <p>Riwayat Kartu Stok</p>
+                    </a>
+                </li>
                 <li class="nav-header">Apotek Online</li>
                 <li class="nav-item">
                     <a href="{{ route('indexcarisepaptonline') }}"

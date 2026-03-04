@@ -7,12 +7,13 @@
             <tr>
                 <th>Tgl Kunjungan</th>
                 <th>Kode Layanan Header</th>
+                <th>Unit kirim</th>
+                <th>Unit terima</th>
                 <th>Nomor RM</th>
                 <th>Nama Pasien</th>
-                <th>Alamat</th>
+                {{-- <th>Alamat</th> --}}
                 <th>No SEP</th>
-                <th>No Apotik</th>
-                <th>No Resep</th>
+                {{-- <th>No Resep</th> --}}
                 <th>Status Bridging</th>
                 <th></th>
             </tr>
@@ -20,15 +21,22 @@
         <tbody>
             @foreach ($data_resep as $item)
                 <tr>
-                    <td>{{ $item->tgl_masuk }}</td>
-                    <td>{{ $item->kode_layanan_header }}</td>
+                    <td>{{ $item->tgl_entry }}</td>
+                    <td>{{ $item->kode_layanan_header }} | {{ $item->keterangan }}</td>
+                    <td>{{ $item->nama_unit_pengirim }}</td>
+                    <td>{{ $item->nama_unit_penerima }}</td>
                     <td>{{ $item->no_rm }}</td>
                     <td>{{ $item->nama_pasien }}</td>
-                    <td>{{ $item->alamat_pasien }}</td>
+                    {{-- <td>{{ $item->alamat_pasien }}</td> --}}
                     <td>{{ $item->no_sep }}</td>
-                    <td>{{ $item->noApotik }}</td>
-                    <td>{{ $item->noResep }}</td>
-                    <td>{{ $item->status_terkirim }}</td>
+                        {{-- <td>{{ $item->noResep }}</td> --}}
+                    <td>
+                        @if (strlen($item->status_terkirim) == 0)
+                            Tidak Bridging
+                        @else
+                            {{ $item->status_terkirim }}
+                        @endif
+                    </td>
                     <td>
                         <button class="btn btn-info detailresep" data-bs-toggle="tooltip" data-bs-placement="top"
                             data-bs-custom-class="custom-tooltip" data-bs-title="klik untuk melihat detail resep ..."

@@ -20,7 +20,7 @@
                 <td>
                     <button class="btn btn-success btn-sm pilihracikan" idtemplate="{{ $d->id }}"><i
                             class="bi bi-box-arrow-down"></i></button>
-                    <button class="btn btn-danger btn-sm hapusracikan" idtemplate="{{ $d->id }}"><i
+                    <button class="btn btn-danger btn-sm hapusracikan" nama="{{ $d->namaracikan}}" isi="{{ $d->keterangan_detail}}" idtemplate="{{ $d->id }}" data-bs-dismiss="modal"><i
                             class="bi bi-trash3"></i></button>
                 </td>
             </tr>
@@ -58,3 +58,61 @@
             }
         });
     })
+    $(".hapusracikan").on('click', function(event) {
+        idtemplate = $(this).attr('idtemplate')
+        nama = $(this).attr('nama')
+        isi = $(this).attr('isi')
+        Swal.fire({
+            title: "Anda yakin ?",
+            text: "template obat racik akan dihapus !",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Ya, Hapus !"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    title: "Hapus data racikan ? " + nama + " Keterangan ( " + isi +" ) " ,
+                    showDenyButton: false,
+                    showCancelButton: true,
+                    confirmButtonText: "Hapus",
+                    denyButtonText: `Batal`
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        hapusracikan(idtemplate)
+                    } else if (result.isDenied) {}
+                });
+            }
+        });
+    })
+
+    function hapusracikan(id) {
+        spinner_on()
+        $.ajax({
+            type: 'post',
+            data: {
+                _token: "{{ csrf_token() }}",
+                idtemplate
+            },
+            url: '<?= route('hapusracikan') ?>',
+            error: function(response) {
+                spinner_off()
+                alert('error')
+            },
+            success: function(response) {
+                spinner_off()                
+                if(response.kode == 200){
+                    Swal.fire({
+                    position: "top-end",
+                    icon: "success",
+                    title: "data berhasil dihapus ...",
+                    showConfirmButton: false,
+                    timer: 1500
+                    });
+                }else{
+
+                }
+            }
+        });
+    }

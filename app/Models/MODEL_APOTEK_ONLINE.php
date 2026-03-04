@@ -231,7 +231,7 @@ class MODEL_APOTEK_ONLINE extends Model
     public function daftar_pelayanan_obat($no_sep)
     {
         $client = new Client();
-        $url = 'https://apijkn-dev.bpjs-kesehatan.go.id/apotek-rest-dev/obat/daftar/' . $no_sep;
+        $url = 'https://apijkn-dev.bpjs-kesehatan.go.id/apotek-rest-dev/pelayanan/obat/daftar/' . $no_sep;
 
         $signature = $this->signature();
         $response = $client->request('GET', $url, [

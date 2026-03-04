@@ -29,11 +29,15 @@ Route::post('/ambildatakunjungan', [DepoFarmasiController::class, 'ambildatakunj
 Route::post('/ambil_form_pelayanan_obat', [DepoFarmasiController::class, 'ambil_form_pelayanan_obat'])->middleware('auth')->name('ambil_form_pelayanan_obat');
 Route::post('/simpanresep', [DepoFarmasiController::class, 'simpanresep_3'])->middleware('auth')->name('simpanresep');
 Route::post('/detailresep', [DepoFarmasiController::class, 'detailresep'])->middleware('auth')->name('detailresep');
+Route::get('/ambilkartustok', [DepoFarmasiController::class, 'ambilkartustok'])->middleware('auth')->name('stok.data');
 
 
 
+Route::get('/indexriwayatkartustok', [DepoFarmasiController::class, 'indexriwayatkartustok'])->middleware('auth')->name('indexriwayatkartustok');
+Route::get('/indexriwayatretur', [DepoFarmasiController::class, 'indexriwayatretur'])->middleware('auth')->name('indexriwayatretur');
 Route::get('/indexcarisep', [DepoFarmasiController::class, 'indexriwayatpelayanan'])->middleware('auth')->name('indexcarisep');
 Route::post('/ambildatariwayatpelayanan', [DepoFarmasiController::class, 'ambildatariwayatpelayanan'])->middleware('auth')->name('ambildatariwayatpelayanan');
+Route::post('/ambildatariwayatretur', [DepoFarmasiController::class, 'ambildatariwayatretur'])->middleware('auth')->name('ambildatariwayatretur');
 Route::post('/createresep', [DepoFarmasiController::class, 'createresep'])->middleware('auth')->name('createresep');
 Route::post('/ambilformobatreguler', [DepoFarmasiController::class, 'ambilformobatreguler'])->middleware('auth')->name('ambilformobatreguler');
 Route::post('/simpanobatreguler', [DepoFarmasiController::class, 'simpanobatreguler'])->middleware('auth')->name('simpanobatreguler');
@@ -46,6 +50,7 @@ Route::post('/proseskomponenracik', [DepoFarmasiController::class, 'proseskompon
 Route::post('/simpanobatracikan', [DepoFarmasiController::class, 'simpanobatracikan'])->middleware('auth')->name('simpanobatracikan');
 Route::post('/ambillistobatracikan', [DepoFarmasiController::class, 'ambillistobatracikan'])->middleware('auth')->name('ambillistobatracikan');
 Route::post('/ambilobatracik', [DepoFarmasiController::class, 'ambilobatracik'])->middleware('auth')->name('ambilobatracik');
+Route::post('/hapusracikan', [DepoFarmasiController::class, 'hapusracikan'])->middleware('auth')->name('hapusracikan');
 
 
 
@@ -96,6 +101,7 @@ Route::get('/indexdaftarresep', [ApotekOnlineController::class, 'indexdaftarrese
 Route::post('/caridaftarresep_apotekonline', [ApotekOnlineController::class, 'caridaftarresep_apotekonline'])->middleware('auth')->name('caridaftarresep_apotekonline');
 Route::get('/indexriwayatpelayananonline', [ApotekOnlineController::class, 'indexriwayatpelayananonline'])->middleware('auth')->name('indexriwayatpelayananonline');
 Route::post('/ambilriwayat_pelayananpeserta', [ApotekOnlineController::class, 'ambilriwayat_pelayananpeserta'])->middleware('auth')->name('ambilriwayat_pelayananpeserta');
+Route::post('/ambilriwayat_pelayananpesertabyrs', [ApotekOnlineController::class, 'ambilriwayat_pelayananpesertabyrs'])->middleware('auth')->name('ambilriwayat_pelayananpesertabyrs');
 Route::get('/indexdataklaim', [ApotekOnlineController::class, 'indexdataklaim'])->middleware('auth')->name('indexdataklaim');
 Route::post('/ambil_data_monitoring_klaim', [ApotekOnlineController::class, 'ambil_data_monitoring_klaim'])->middleware('auth')->name('ambil_data_monitoring_klaim');
 Route::get('/indexrekapprb', [ApotekOnlineController::class, 'indexrekapprb'])->middleware('auth')->name('indexrekapprb');

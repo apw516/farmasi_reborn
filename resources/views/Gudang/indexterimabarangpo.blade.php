@@ -28,6 +28,7 @@
                     <div class="card">
                         <div class="card-header">Form PO Header</div>
                         <div class="card-body p-2">
+                            <form action="" class="formpoheader">
                             <div class="row g-2">
                                 <div class="col-md-3">
                                     <div class="row g-1">
@@ -60,14 +61,13 @@
                                         </div>
                                     </div>
                                 </div>
-
                                 <div class="col-md-4">
                                     <div class="row g-1">
                                         <div class="col-md-8">
                                             <div class="mb-1">
                                                 <label class="form-label small mb-0">Tgl Pembelian</label>
                                                 <input type="date" class="form-control form-control-sm"
-                                                    name="tanggalbeli">
+                                                    name="tanggalbeli" value="{{ $today }}">
                                             </div>
                                         </div>
                                         <div class="col-md-4">
@@ -80,13 +80,13 @@
                                             <div class="mb-1">
                                                 <label class="form-label small mb-0">Tgl Penerimaan</label>
                                                 <input type="date" class="form-control form-control-sm"
-                                                    name="tanggalterima">
+                                                    name="tanggalterima" value="{{ $today }}">
                                             </div>
                                         </div>
                                         <div class="col-12">
                                             <div class="mb-1">
                                                 <label class="form-label small mb-0">Tipe Pembelian</label>
-                                                <select class="form-select form-select-sm">
+                                                <select class="form-select form-select-sm" id="tipepembelian" name="tipepembelian">
                                                     <option value="K">Kredit</option>
                                                     <option value="T">Tunai</option>
                                                 </select>
@@ -95,7 +95,7 @@
                                         <div class="col-12">
                                             <div class="mb-1">
                                                 <label class="form-label small mb-0">Kategori Barang</label>
-                                                <select class="form-select form-select-sm">
+                                                <select class="form-select form-select-sm" name="kategoribarang" id="kategoribarang">
                                                     @foreach ($tipe as $t)
                                                         <option value="{{ $t->kode_tipe }}">{{ $t->kode_tipe }} |
                                                             {{ $t->nama_tipe }}</option>
@@ -107,7 +107,7 @@
                                             <div class="mb-1">
                                                 <label class="form-label small mb-0">Nomor Faktur</label>
                                                 <input type="text" class="form-control form-control-sm"
-                                                    name="tanggalterima">
+                                                    name="nomorfaktur" id="nomorfaktur">
                                             </div>
                                         </div>
                                     </div>
@@ -117,15 +117,15 @@
                                     <div class="row g-1">
                                         <div class="col-6 d-flex align-items-center justify-content-between mb-1">
                                             <div class="form-check form-check-inline mb-0">
-                                                <input class="form-check-input" type="checkbox" id="materai">
+                                                <input class="form-check-input" type="checkbox" id="materai" name="materai">
                                                 <label class="form-check-label small" for="materai">Materai</label>
                                             </div>
                                             <div class="form-check form-check-inline mb-0">
-                                                <input class="form-check-input" type="checkbox" id="ppn">
+                                                <input class="form-check-input" type="checkbox" id="ppn" name="ppn">
                                                 <label class="form-check-label small" for="ppn">PPN</label>
                                             </div>
                                             <div class="form-check form-check-inline mb-0">
-                                                <input class="form-check-input" type="checkbox" id="ppn">
+                                                <input class="form-check-input" type="checkbox" id="pph" name="pph">
                                                 <label class="form-check-label small" for="ppn">PPH</label>
                                             </div>
                                         </div>
@@ -141,17 +141,17 @@
                                         </div>
                                         <div class="col-md-5">
                                             <div class="mb-1">
-                                                <label class="form-label small mb-0">Pot (%)</label>
+                                                <label class="form-label small mb-0">Potongan (%)</label>
                                                 <div class="input-group input-group-sm">
-                                                    <input type="text" class="form-control form-control-sm text-end">
+                                                    <input type="text" class="form-control form-control-sm text-end" name="potonganpersen">
                                                     <span class="input-group-text p-1">%</span>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="col-md-5">
                                             <div class="mb-1">
-                                                <label class="form-label small mb-0">Pot (Rp)</label>
-                                                <input type="text" class="form-control form-control-sm text-end">
+                                                <label class="form-label small mb-0">Potongan (Rp)</label>
+                                                <input type="text" class="form-control form-control-sm text-end" name="potongantunai">
                                             </div>
                                         </div>
                                         <div class="col-12">
@@ -159,7 +159,7 @@
                                                 <label class="col-sm-2 form-label small mb-0">Sub Grand Total</label>
                                                 <div class="col-sm-8">
                                                     <input type="text"
-                                                        class="form-control form-control-sm text-end fw-bold" readonly>
+                                                        class="form-control form-control-sm text-end fw-bold" name="subgrandtotal" readonly>
                                                 </div>
                                             </div>
                                         </div>
@@ -168,7 +168,7 @@
                                                 <label class="col-sm-2 form-label small mb-0">PPN</label>
                                                 <div class="col-sm-8">
                                                     <input type="text"
-                                                        class="form-control form-control-sm text-end fw-bold" readonly>
+                                                        class="form-control form-control-sm text-end fw-bold" name="nominalppn" readonly>
                                                 </div>
                                             </div>
                                         </div>
@@ -179,7 +179,7 @@
                                                 <div class="col-sm-8">
                                                     <input type="text"
                                                         class="form-control form-control-sm text-end border-primary"
-                                                        readonly>
+                                                        readonly name="grandtotal">
                                                 </div>
                                             </div>
                                         </div>
@@ -189,13 +189,17 @@
                                                 <div class="col-sm-8">
                                                     <input type="text"
                                                         class="form-control form-control-sm text-end border-primary"
-                                                        readonly>
+                                                        readonly name="totalutang">
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-
+                            </div>
+                            </form>
+                            <div class="card-header mt-5">Pilih Barang</div>
+                            <div class="card-body">
+                                
                             </div>
                         </div>
                         <div class="card-body">
@@ -207,7 +211,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="card mt-2">
+                <div hidden class="card mt-2">
                     <div class="card-header bg-light">Data PO Header</div>
                     <div class="card-body">
                         <div class="row">
@@ -330,7 +334,7 @@
         }
 
         function simpanpoheaderfinal() {
-            var data = $('.formheaderpo').serializeArray();
+            var data = $('.formpoheader').serializeArray();
             $.ajax({
                 type: 'post',
                 data: {
@@ -362,63 +366,64 @@
                 }
             });
         }
-        const inputMask = document.getElementById('totalpo_mask');
-        const inputAsli = document.getElementById('totalpo_asli');
-        const labelAsli = document.getElementById('label_asli');
 
-        const inputMask2 = document.getElementById('ppn_mask');
-        const inputAsli2 = document.getElementById('ppn_asli');
-        const labelAsli2 = document.getElementById('label_asli_ppn');
+        // const inputMask = document.getElementById('totalpo_mask');
+        // const inputAsli = document.getElementById('totalpo_asli');
+        // const labelAsli = document.getElementById('label_asli');
 
-        const inputMask3 = document.getElementById('totalhutang_mask');
-        const inputAsli3 = document.getElementById('totalhutang_asli');
-        const labelAsli3 = document.getElementById('label_asli_totalhutang');
-        inputMask.addEventListener('keyup', function(e) {
-            // 1. Ambil angka saja dari input
-            let nominal = this.value.replace(/[^,\d]/g, '').toString();
+        // const inputMask2 = document.getElementById('ppn_mask');
+        // const inputAsli2 = document.getElementById('ppn_asli');
+        // const labelAsli2 = document.getElementById('label_asli_ppn');
 
-            // 2. Masukkan angka bersih ke input hidden & label
-            inputAsli.value = nominal;
-            labelAsli.innerText = nominal;
+        // const inputMask3 = document.getElementById('totalhutang_mask');
+        // const inputAsli3 = document.getElementById('totalhutang_asli');
+        // const labelAsli3 = document.getElementById('label_asli_totalhutang');
+        // inputMask.addEventListener('keyup', function(e) {
+        //     // 1. Ambil angka saja dari input
+        //     let nominal = this.value.replace(/[^,\d]/g, '').toString();
 
-            // 3. Ubah tampilan input menjadi format ribuan
-            this.value = formatRupiah(nominal);
-        });
-        inputMask2.addEventListener('keyup', function(e) {
-            // 1. Ambil angka saja dari input
-            let nominal = this.value.replace(/[^,\d]/g, '').toString();
+        //     // 2. Masukkan angka bersih ke input hidden & label
+        //     inputAsli.value = nominal;
+        //     labelAsli.innerText = nominal;
 
-            // 2. Masukkan angka bersih ke input hidden & label
-            inputAsli2.value = nominal;
-            labelAsli2.innerText = nominal;
+        //     // 3. Ubah tampilan input menjadi format ribuan
+        //     this.value = formatRupiah(nominal);
+        // });
+        // inputMask2.addEventListener('keyup', function(e) {
+        //     // 1. Ambil angka saja dari input
+        //     let nominal = this.value.replace(/[^,\d]/g, '').toString();
 
-            // 3. Ubah tampilan input menjadi format ribuan
-            this.value = formatRupiah(nominal);
-        });
-        inputMask3.addEventListener('keyup', function(e) {
-            // 1. Ambil angka saja dari input
-            let nominal = this.value.replace(/[^,\d]/g, '').toString();
+        //     // 2. Masukkan angka bersih ke input hidden & label
+        //     inputAsli2.value = nominal;
+        //     labelAsli2.innerText = nominal;
 
-            // 2. Masukkan angka bersih ke input hidden & label
-            inputAsli3.value = nominal;
-            labelAsli3.innerText = nominal;
+        //     // 3. Ubah tampilan input menjadi format ribuan
+        //     this.value = formatRupiah(nominal);
+        // });
+        // inputMask3.addEventListener('keyup', function(e) {
+        //     // 1. Ambil angka saja dari input
+        //     let nominal = this.value.replace(/[^,\d]/g, '').toString();
 
-            // 3. Ubah tampilan input menjadi format ribuan
-            this.value = formatRupiah(nominal);
-        });
-        /* Fungsi Format Ribuan */
-        function formatRupiah(angka) {
-            let number_string = angka.replace(/[^,\d]/g, '').toString(),
-                split = number_string.split(','),
-                sisa = split[0].length % 3,
-                rupiah = split[0].substr(0, sisa),
-                ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+        //     // 2. Masukkan angka bersih ke input hidden & label
+        //     inputAsli3.value = nominal;
+        //     labelAsli3.innerText = nominal;
 
-            if (ribuan) {
-                separator = sisa ? '.' : '';
-                rupiah += separator + ribuan.join('.');
-            }
-            return split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
-        }
+        //     // 3. Ubah tampilan input menjadi format ribuan
+        //     this.value = formatRupiah(nominal);
+        // });
+        // /* Fungsi Format Ribuan */
+        // function formatRupiah(angka) {
+        //     let number_string = angka.replace(/[^,\d]/g, '').toString(),
+        //         split = number_string.split(','),
+        //         sisa = split[0].length % 3,
+        //         rupiah = split[0].substr(0, sisa),
+        //         ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+
+        //     if (ribuan) {
+        //         separator = sisa ? '.' : '';
+        //         rupiah += separator + ribuan.join('.');
+        //     }
+        //     return split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
+        // }
     </script>
 @endsection

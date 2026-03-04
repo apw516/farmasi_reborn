@@ -35,11 +35,13 @@ class GudangFarmasiController extends MasterController
         $date_end = $end->format('Y-m-d');
         $menu = 'indexterimabarangpo';
         $tipe = DB::table('mt_tipe_barang')->get();
+        $today = $this->get_date();
         return view('Gudang.indexterimabarangpo', compact([
             'menu',
             'date_start',
             'date_end',
-            'tipe'
+            'tipe',
+            'today'
         ]));
     }
     public function ambildatastok()
@@ -114,6 +116,7 @@ class GudangFarmasiController extends MasterController
             $value3 = $nama3['value'];
             $dataSet3[$index3] = $value3;
         }
+        dd($dataSet3);
         $datasave = [
             'kode_po' => $this->get_kode_po(),
             'no_faktur' => $dataSet3['nomorfaktur'],

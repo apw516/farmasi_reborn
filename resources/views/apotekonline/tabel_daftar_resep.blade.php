@@ -41,6 +41,9 @@
                             @endif
                         </td>
                         <td>
+                            <button class="btn btn-info btn-sm detailresep" noapotik="{{ $d->NOAPOTIK }}"
+                                nosep="{{ $d->NOSEP_KUNJUNGAN }}" noresep="{{ $d->NORESEP }}" data-bs-toggle="modal" data-bs-target="#modaldetailresep"><i
+                                    class="bi bi-eye"></i></button>
                             <button class="btn btn-danger btn-sm hapusresep" noapotik="{{ $d->NOAPOTIK }}"
                                 nosep="{{ $d->NOSEP_KUNJUNGAN }}" noresep="{{ $d->NORESEP }}"><i
                                     class="bi bi-trash3"></i></button>
@@ -50,6 +53,25 @@
             </tbody>
         </table>
     </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="modaldetailresep" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Detail Resep</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="v_d_r">
+
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
 </div>
 <script>
     $(function() {
@@ -62,6 +84,27 @@
             "ordering": false,
         })
     });
+    $(".detailresep").on('click', function(event) {
+        nosep = $(this).attr('noapotik')
+        spinner_on()
+        $.ajax({
+            type: 'post',
+            data: {
+                _token: "{{ csrf_token() }}",
+                nosep
+            },
+            url: '<?= route('carisep_apotekonline') ?>',
+            error: function(response) {
+                spinner_off()
+                alert('error')
+            },
+            success: function(response) {
+                spinner_off()
+                $('.v_d_r').html(response);
+            }
+        });
+
+    })
     $(".hapusresep").on('click', function(event) {
         noapotik = $(this).attr('noapotik')
         noresep = $(this).attr('noresep')
