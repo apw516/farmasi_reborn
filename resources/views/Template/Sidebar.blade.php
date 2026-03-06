@@ -109,11 +109,11 @@
                         <p>Purchase Order</p>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a href="{{ route('indexmasterstok') }}"
-                        class="nav-link @if ($menu == 'indexmasterstok') active @endif">
+               <li class="nav-item">
+                    <a href="{{ route('indexriwayatkartustok') }}"
+                        class="nav-link @if ($menu == 'indexriwayatkartustok') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
-                        <p>Log kartu stok</p>
+                        <p>Kartu Stok</p>
                     </a>
                 </li>
                 <li class="nav-header">Data Master</li>

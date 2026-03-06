@@ -72,6 +72,8 @@ Route::get('/search-supplier', [GudangFarmasiController::class, 'searchsupplier'
 Route::post('/simpanpoheader', [GudangFarmasiController::class, 'simpanpoheader'])->name('simpanpoheader');
 Route::post('/ambildatatgpoheader', [GudangFarmasiController::class, 'ambildatatgpoheader'])->name('ambildatatgpoheader');
 Route::post('/ambilformdetailpo', [GudangFarmasiController::class, 'ambilformdetailpo'])->name('ambilformdetailpo');
+Route::post('/prosesbarangpilihanPO', [GudangFarmasiController::class, 'prosesbarangpilihanPO'])->name('prosesbarangpilihanPO');
+Route::post('/totalhitungpurchaseorder', [GudangFarmasiController::class, 'totalhitungpurchaseorder'])->name('totalhitungpurchaseorder');
 
 
 Route::get('/indexmappingbarang', [MasterController::class, 'indexmappingbarang'])->name('indexmappingbarang');

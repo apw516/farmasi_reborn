@@ -35,13 +35,15 @@ class GudangFarmasiController extends MasterController
         $date_end = $end->format('Y-m-d');
         $menu = 'indexterimabarangpo';
         $tipe = DB::table('mt_tipe_barang')->get();
+        $satuan = DB::table('mt_satuan')->get();
         $today = $this->get_date();
         return view('Gudang.indexterimabarangpo', compact([
             'menu',
             'date_start',
             'date_end',
             'tipe',
-            'today'
+            'today',
+            'satuan'
         ]));
     }
     public function ambildatastok()
@@ -62,7 +64,7 @@ class GudangFarmasiController extends MasterController
                 't1.kode_barang',
                 't1.no'
             ]);
-            
+
         return DataTables::of($query)
             ->addIndexColumn()
             // Sekarang filterColumn akan sangat cepat karena mencari di kolom tabel asli
@@ -149,6 +151,99 @@ class GudangFarmasiController extends MasterController
             'message' => 'Data PO berhasil disimpan ...'
         ], 200);
         die;
+    }
+    public function prosesbarangpilihanPO(Request $request)
+    {
+        $data = json_decode($_POST['data'], true);
+        foreach ($data as $nama3) {
+            $index3 = $nama3['name'];
+            $value3 = $nama3['value'];
+            $dataSet3[$index3] = $value3;
+        }
+        $kode_barang = $dataSet3['kodebarang'];
+        $nama_barang = $dataSet3['namabarangpilihan'];
+        $qty = $dataSet3['qty'];
+        $satuan = $dataSet3['satuan'];
+        $hrgasatuan = $dataSet3['hrgasatuan'];
+        $hrgasatuanasli = $dataSet3['hrgasatuanasli'];
+        $ed = $dataSet3['ed'];
+        $nobatch = $dataSet3['nobatch'];
+        if ($qty == 0) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Isi jumlah barang ...',
+                'html'   => ''
+            ]);
+        } elseif ($hrgasatuan == 0) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Harga satuan wajib diisi ...',
+                'html'   => ''
+            ]);
+        } elseif ($ed == '') {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Expired date wajib diisi ...',
+                'html'   => ''
+            ]);
+        } elseif ($nobatch == 0) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Nomor Batch wajib diisi ...',
+                'html'   => ''
+            ]);
+        } else {
+            $diskon = $dataSet3['diskon'];
+            $satuana = DB::table('mt_satuan')->get();
+            $subtotal = $hrgasatuanasli * $qty;
+            $hitungdiskon = $subtotal * $diskon / 100;
+
+            $subtotal_final = $subtotal - $hitungdiskon;
+            $subtotal_format = number_format($subtotal_final, 0, ',', '.');
+            $dataarray = [
+                'kode_barang' => $kode_barang,
+                'nama_barang' => $nama_barang,
+                'qty' => $qty,
+                'satuan' => $satuan,
+                'hrgasatuan' => $hrgasatuan,
+                'hrgasatuanasli' => $hrgasatuanasli,
+                'diskon' => $diskon,
+                'nobatch' => $nobatch,
+                'ed' => $ed,
+                'subtotal' => $subtotal_final,
+                'subtotal_format' => $subtotal_format
+            ];
+            $html = view('Gudang.form_barang_po', compact(['dataarray', 'satuana']))->render();
+            return response()->json([
+                'status' => 'success',
+                'message' => 'ok',
+                'html'   => $html
+            ]);
+        }
+    }
+    public function totalhitungpurchaseorder(Request $request)
+    {
+        $data = json_decode($_POST['data'], true);
+        foreach ($data as $nama2) {
+            $index2 = $nama2['name'];
+            $value2 = $nama2['value'];
+            $dataSet2[$index2] = $value2;
+            if ($index2 == 'list_subtotal_asli') {
+                $bb[] = $dataSet2;
+            }
+        }
+        $total = 0;
+        foreach ($bb as $b) {
+            $total = $total + $b['list_subtotal_asli'];
+        }
+        $total_format = number_format($total, 0, ',', '.');
+        $total_asli = $total;
+        return response()->json([
+            'status' => 'success',
+            'message' => 'ok',
+            'total'   => $total_asli,
+            'total_format' => $total_format
+        ]);
     }
     public function get_kode_po()
     {

@@ -29,185 +29,311 @@
                         <div class="card-header">Form PO Header</div>
                         <div class="card-body p-2">
                             <form action="" class="formpoheader">
-                            <div class="row g-2">
-                                <div class="col-md-3">
-                                    <div class="row g-1">
-                                        <div class="col-md-7">
-                                            <div class="mb-1">
-                                                <label class="form-label small mb-0">Pilih Supplier</label>
-                                                <input type="text" class="form-control form-control-sm"
-                                                    id="supplier_search" name="supplier_search">
+                                <div class="row g-2">
+                                    <div class="col-md-3">
+                                        <div class="row g-1">
+                                            <div class="col-md-7">
+                                                <div class="mb-1">
+                                                    <label class="form-label small mb-0">Pilih Supplier</label>
+                                                    <input type="text" class="form-control form-control-sm"
+                                                        id="supplier_search" name="supplier_search">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-5">
+                                                <div class="mb-1">
+                                                    <label class="form-label small mb-0">Supplier ID</label>
+                                                    <input readonly type="text" class="form-control form-control-sm"
+                                                        id="supplier_id" name="supplier_id">
+                                                </div>
+                                            </div>
+                                            <div class="col-12">
+                                                <div class="mb-1">
+                                                    <label class="form-label small mb-0">Alamat</label>
+                                                    <textarea rows="3" readonly class="form-control form-control-sm" id="alamat_supplier" name="alamat_supplier"></textarea>
+                                                </div>
+                                            </div>
+                                            <div class="col-12">
+                                                <div class="mb-1">
+                                                    <label class="form-label small mb-0">Telp</label>
+                                                    <input readonly type="text" class="form-control form-control-sm"
+                                                        id="telp_supplier" name="telp_supplier">
+                                                </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-5">
-                                            <div class="mb-1">
-                                                <label class="form-label small mb-0">Supplier ID</label>
-                                                <input readonly type="text" class="form-control form-control-sm"
-                                                    id="supplier_id" name="supplier_id">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="row g-1">
+                                            <div class="col-md-8">
+                                                <div class="mb-1">
+                                                    <label class="form-label small mb-0">Tgl Pembelian</label>
+                                                    <input type="date" class="form-control form-control-sm"
+                                                        name="tanggalbeli" value="{{ $today }}">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="mb-1">
+                                                    <label class="form-label small mb-0">Termin</label>
+                                                    <input type="text" class="form-control form-control-sm"
+                                                        name="termin">
+                                                </div>
+                                            </div>
+                                            <div class="col-12">
+                                                <div class="mb-1">
+                                                    <label class="form-label small mb-0">Tgl Penerimaan</label>
+                                                    <input type="date" class="form-control form-control-sm"
+                                                        name="tanggalterima" value="{{ $today }}">
+                                                </div>
+                                            </div>
+                                            <div class="col-12">
+                                                <div class="mb-1">
+                                                    <label class="form-label small mb-0">Tipe Pembelian</label>
+                                                    <select class="form-select form-select-sm" id="tipepembelian"
+                                                        name="tipepembelian">
+                                                        <option value="K">Kredit</option>
+                                                        <option value="T">Tunai</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-12">
+                                                <div class="mb-1">
+                                                    <label class="form-label small mb-0">Kategori Barang</label>
+                                                    <select class="form-select form-select-sm" name="kategoribarang"
+                                                        id="kategoribarang">
+                                                        @foreach ($tipe as $t)
+                                                            <option value="{{ $t->kode_tipe }}">{{ $t->kode_tipe }} |
+                                                                {{ $t->nama_tipe }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-12">
+                                                <div class="mb-1">
+                                                    <label class="form-label small mb-0">Nomor Faktur</label>
+                                                    <input type="text" class="form-control form-control-sm"
+                                                        name="nomorfaktur" id="nomorfaktur">
+                                                </div>
                                             </div>
                                         </div>
-                                        <div class="col-12">
-                                            <div class="mb-1">
-                                                <label class="form-label small mb-0">Alamat</label>
-                                                <textarea rows="3" readonly class="form-control form-control-sm" id="alamat_supplier" name="alamat_supplier"></textarea>
+                                    </div>
+
+                                    <div class="col-md-5">
+                                        <div class="row g-1">
+                                            <div class="col-6 d-flex align-items-center justify-content-between mb-1">
+                                                <div class="form-check form-check-inline mb-0">
+                                                    <input class="form-check-input" type="checkbox" id="materai"
+                                                        name="materai">
+                                                    <label class="form-check-label small" for="materai">Materai</label>
+                                                </div>
+                                                <div class="form-check form-check-inline mb-0">
+                                                    <input class="form-check-input" type="checkbox" id="ppn"
+                                                        name="ppn">
+                                                    <label class="form-check-label small" for="ppn">PPN</label>
+                                                </div>
+                                                <div class="form-check form-check-inline mb-0">
+                                                    <input class="form-check-input" type="checkbox" id="pph"
+                                                        name="pph">
+                                                    <label class="form-check-label small" for="ppn">PPH</label>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <div class="mb-1">
-                                                <label class="form-label small mb-0">Telp</label>
-                                                <input readonly type="text" class="form-control form-control-sm"
-                                                    id="telp_supplier" name="telp_supplier">
+
+                                            <div class="col-12">
+                                                <div class="mb-1 row g-0 align-items-center">
+                                                    <label class="col-sm-2 form-label small mb-0">Total Pembelian</label>
+                                                    <div class="col-sm-8">
+                                                        <input type="text"
+                                                            class="form-control form-control-sm text-end"
+                                                            name="totalpembelian" id="totalpembelian">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-5">
+                                                <div class="mb-1">
+                                                    <label class="form-label small mb-0">Potongan (%)</label>
+                                                    <div class="input-group input-group-sm">
+                                                        <input type="text"
+                                                            class="form-control form-control-sm text-end"
+                                                            name="potonganpersen">
+                                                        <span class="input-group-text p-1">%</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-5">
+                                                <div class="mb-1">
+                                                    <label class="form-label small mb-0">Potongan (Rp)</label>
+                                                    <input type="text" class="form-control form-control-sm text-end"
+                                                        name="potongantunai">
+                                                </div>
+                                            </div>
+                                            <div class="col-12">
+                                                <div class="mb-1 row g-0 align-items-center">
+                                                    <label class="col-sm-2 form-label small mb-0">Sub Grand Total</label>
+                                                    <div class="col-sm-8">
+                                                        <input type="text"
+                                                            class="form-control form-control-sm text-end fw-bold"
+                                                            name="subgrandtotal" readonly>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-12">
+                                                <div class="mb-1 row g-0 align-items-center">
+                                                    <label class="col-sm-2 form-label small mb-0">PPN</label>
+                                                    <div class="col-sm-8">
+                                                        <input type="text"
+                                                            class="form-control form-control-sm text-end fw-bold"
+                                                            name="nominalppn" readonly>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-12">
+                                                <div class="mb-1 row g-0 align-items-center">
+                                                    <label class="col-sm-2 form-label small mb-0 text-dark fw-bold">Grand
+                                                        Total</label>
+                                                    <div class="col-sm-8">
+                                                        <input type="text"
+                                                            class="form-control form-control-sm text-end border-primary"
+                                                            readonly name="grandtotal">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-12">
+                                                <div class="mb-1 row g-0 align-items-center">
+                                                    <label class="col-sm-2 form-label small mb-0 text-dark fw-bold">TOTAL
+                                                        UTANG</label>
+                                                    <div class="col-sm-8">
+                                                        <input type="text"
+                                                            class="form-control form-control-sm text-end border-primary"
+                                                            readonly name="totalutang">
+                                                        <div class="btn-group float-end mt-2" role="group"
+                                                            aria-label="Basic mixed styles example">
+                                                            <button type="button" class="btn btn-danger"><i
+                                                                    class="bi bi-x-octagon"></i>
+                                                                Batal</button>
+                                                            <button type="button" class="btn btn-success" onclick="hitungtotal()"><i
+                                                                    class="bi bi-cloud-arrow-up-fill"></i> Proses</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="row">
+                                                    <div class="col-md-6">
+
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
-                                    <div class="row g-1">
-                                        <div class="col-md-8">
-                                            <div class="mb-1">
-                                                <label class="form-label small mb-0">Tgl Pembelian</label>
-                                                <input type="date" class="form-control form-control-sm"
-                                                    name="tanggalbeli" value="{{ $today }}">
+                            </form>
+                            <div class="card-header mt-5">
+                                <form action="" class="formbarangpilihan">
+                                    <div class="row">
+                                        <div hidden class="col-md-1">
+                                            <div class="mb-3">
+                                                <label for="exampleFormControlInput1" class="form-label">Kode
+                                                    Barang</label>
+                                                <input type="email" class="form-control" id="kodebarang"
+                                                    name="kodebarang" placeholder="kode barang ...">
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
-                                            <div class="mb-1">
-                                                <label class="form-label small mb-0">Termin</label>
-                                                <input type="text" class="form-control form-control-sm" name="termin">
+                                        <div class="col-md-3">
+                                            <div class="mb-3">
+                                                <label for="exampleInputEmail1" class="form-label">Nama Barang</label>
+                                                <div class="input-group mb-3">
+                                                    <input readonly type="text" class="form-control"
+                                                        placeholder="silahkan cari barang ..."
+                                                        aria-label="Recipient’s username" aria-describedby="basic-addon2"
+                                                        id="namabarangpilihan" name="namabarangpilihan">
+                                                    <span class="btn btn-success" data-bs-toggle="modal"
+                                                        data-bs-target="#modalcariobat"><i
+                                                            class="bi bi-search"></i></span>
+                                                </div>
                                             </div>
                                         </div>
-                                        <div class="col-12">
-                                            <div class="mb-1">
-                                                <label class="form-label small mb-0">Tgl Penerimaan</label>
-                                                <input type="date" class="form-control form-control-sm"
-                                                    name="tanggalterima" value="{{ $today }}">
+                                        <div class="col-md-1">
+                                            <div class="mb-3">
+                                                <label for="exampleFormControlInput1" class="form-label">QTY</label>
+                                                <input type="text" class="form-control" id="qty" name="qty"
+                                                    placeholder="qty barang ..." value="0">
                                             </div>
                                         </div>
-                                        <div class="col-12">
-                                            <div class="mb-1">
-                                                <label class="form-label small mb-0">Tipe Pembelian</label>
-                                                <select class="form-select form-select-sm" id="tipepembelian" name="tipepembelian">
-                                                    <option value="K">Kredit</option>
-                                                    <option value="T">Tunai</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <div class="mb-1">
-                                                <label class="form-label small mb-0">Kategori Barang</label>
-                                                <select class="form-select form-select-sm" name="kategoribarang" id="kategoribarang">
-                                                    @foreach ($tipe as $t)
-                                                        <option value="{{ $t->kode_tipe }}">{{ $t->kode_tipe }} |
-                                                            {{ $t->nama_tipe }}</option>
+                                        <div class="col-md-2">
+                                            <div class="mb-3">
+                                                <label for="exampleFormControlInput1" class="form-label">Satuan</label>
+                                                <select class="form-select" aria-label="Default select example"
+                                                    id="satuan" name="satuan">
+                                                    <option value="0">Silahkan Pilih</option>
+                                                    @foreach ($satuan as $s)
+                                                        <option value="{{ $s->kode_satuan }}">{{ $s->nama_satuan }}
+                                                        </option>
                                                     @endforeach
                                                 </select>
                                             </div>
                                         </div>
-                                        <div class="col-12">
-                                            <div class="mb-1">
-                                                <label class="form-label small mb-0">Nomor Faktur</label>
-                                                <input type="text" class="form-control form-control-sm"
-                                                    name="nomorfaktur" id="nomorfaktur">
+                                        <div class="col-md-1">
+                                            <div class="mb-3">
+                                                <label for="exampleFormControlInput1" class="form-label">Hrg
+                                                    Satuan</label>
+                                                <input type="text" class="form-control" id="hrgasatuan"
+                                                    name="hrgasatuan" placeholder="harga satuan ..." value="0">
+                                                <input hidden type="text" class="form-control" id="hrgasatuanasli"
+                                                    name="hrgasatuanasli" placeholder="harga satuan ...">
+                                                <label hidden for="exampleFormControlInput1" id="labelasli"
+                                                    class="form-label">Diskon</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-1">
+                                            <div class="mb-3">
+                                                <label for="exampleFormControlInput1" class="form-label">Diskon</label>
+                                                <input type="text" class="form-control" id="diskon" name="diskon"
+                                                    placeholder="diskon ..." value="0">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-1">
+                                            <div class="mb-3">
+                                                <label for="exampleFormControlInput1" class="form-label">No. Batch</label>
+                                                <input type="text" class="form-control" id="nobatch" name="nobatch"
+                                                    placeholder="no batch ..." value="0">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="mb-3">
+                                                <label for="exampleFormControlInput1" class="form-label">Expired
+                                                    date</label>
+                                                <input type="date" class="form-control" id="ed" name="ed"
+                                                    placeholder="name@example.com">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-1">
+                                            <div class="mb-3">
+                                                <button class="btn btn-success" style="margin-top:33px"
+                                                    onclick="prosesbarang()"><i
+                                                        class="bi bi-arrow-down-left-square"></i></button>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-
-                                <div class="col-md-5">
-                                    <div class="row g-1">
-                                        <div class="col-6 d-flex align-items-center justify-content-between mb-1">
-                                            <div class="form-check form-check-inline mb-0">
-                                                <input class="form-check-input" type="checkbox" id="materai" name="materai">
-                                                <label class="form-check-label small" for="materai">Materai</label>
-                                            </div>
-                                            <div class="form-check form-check-inline mb-0">
-                                                <input class="form-check-input" type="checkbox" id="ppn" name="ppn">
-                                                <label class="form-check-label small" for="ppn">PPN</label>
-                                            </div>
-                                            <div class="form-check form-check-inline mb-0">
-                                                <input class="form-check-input" type="checkbox" id="pph" name="pph">
-                                                <label class="form-check-label small" for="ppn">PPH</label>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-12">
-                                            <div class="mb-1 row g-0 align-items-center">
-                                                <label class="col-sm-2 form-label small mb-0">Total Pembelian</label>
-                                                <div class="col-sm-8">
-                                                    <input type="text" class="form-control form-control-sm text-end"
-                                                        name="total">
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-5">
-                                            <div class="mb-1">
-                                                <label class="form-label small mb-0">Potongan (%)</label>
-                                                <div class="input-group input-group-sm">
-                                                    <input type="text" class="form-control form-control-sm text-end" name="potonganpersen">
-                                                    <span class="input-group-text p-1">%</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-5">
-                                            <div class="mb-1">
-                                                <label class="form-label small mb-0">Potongan (Rp)</label>
-                                                <input type="text" class="form-control form-control-sm text-end" name="potongantunai">
-                                            </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <div class="mb-1 row g-0 align-items-center">
-                                                <label class="col-sm-2 form-label small mb-0">Sub Grand Total</label>
-                                                <div class="col-sm-8">
-                                                    <input type="text"
-                                                        class="form-control form-control-sm text-end fw-bold" name="subgrandtotal" readonly>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <div class="mb-1 row g-0 align-items-center">
-                                                <label class="col-sm-2 form-label small mb-0">PPN</label>
-                                                <div class="col-sm-8">
-                                                    <input type="text"
-                                                        class="form-control form-control-sm text-end fw-bold" name="nominalppn" readonly>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <div class="mb-1 row g-0 align-items-center">
-                                                <label class="col-sm-2 form-label small mb-0 text-dark fw-bold">Grand
-                                                    Total</label>
-                                                <div class="col-sm-8">
-                                                    <input type="text"
-                                                        class="form-control form-control-sm text-end border-primary"
-                                                        readonly name="grandtotal">
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <div class="mb-1 row g-0 align-items-center">
-                                                <label class="col-sm-2 form-label small mb-0 text-dark fw-bold">TOTAL UTANG</label>
-                                                <div class="col-sm-8">
-                                                    <input type="text"
-                                                        class="form-control form-control-sm text-end border-primary"
-                                                        readonly name="totalutang">
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                </form>
                             </div>
-                            </form>
-                            <div class="card-header mt-5">Pilih Barang</div>
                             <div class="card-body">
-                                
+                                <label for="exampleFormControlInput1" class="form-label">List Barang ....</label>
+                                <div class="v_list_b mt-2">
+                                    <form action="" method="post" class="v_list_barang  mt-2 mt-2">
+                                        <div class="draft_barang">
+                                            <div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                         <div class="card-body">
-                            <button class="btn btn-success" onclick="simpanpoheader()"><i class="bi bi-floppy"
-                                    style="margin-right:8px"></i>
+                            {{-- <button class="btn btn-success float-end" style="margin-left:6px "
+                                onclick="simpanpoheader()"><i class="bi bi-floppy" style="margin-right:8px"></i>
                                 Simpan</button>
-                            <button class="btn btn-danger" onclick="batal()"><i class="bi bi-arrow-clockwise"
-                                    style="margin-right:8px"></i> Batal</button>
+                            <button class="btn btn-danger float-end" onclick="batal()"><i class="bi bi-arrow-clockwise"
+                                    style="margin-right:8px"></i> Batal</button> --}}
                         </div>
                     </div>
                 </div>
@@ -249,12 +375,86 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="modalcariobat" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Silahkan Pilih Obat</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="container-fluid">
+                        <table id="tabel_barang" class="table table-bordered table-hover" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>Kode Barang</th>
+                                    <th>Nama Barang</th>
+                                    <th>Satuan</th>
+                                    <th>sediaan</th>
+                                    <th>Dosis</th>
+                                    <th class="text-center"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
     <script>
         $(document).ready(function() {
             caridataerimabarang()
+            $('#tabel_barang').DataTable({
+                processing: true,
+                serverSide: true, // Fitur server side aktif
+                ajax: "{{ route('ambilbarang') }}",
+                columns: [{
+                        data: 'kode_barang',
+                        name: 'kode_barang'
+                    }, // Nomor urut otomatis
+                    {
+                        data: 'nama_barang',
+                        name: 'nama_barang'
+                    },
+                    {
+                        data: 'satuan_besar',
+                        name: 'satuan_besar'
+                    },
+                    {
+                        data: 'sediaan',
+                        name: 'sediaan'
+                    },
+                    {
+                        data: 'dosis',
+                        name: 'dosis'
+                    },
+                    {
+                        data: null, // Kolom ini tidak terikat data langsung
+                        orderable: false,
+                        searchable: false,
+                        render: function(data, type, row) {
+                            // row adalah objek data untuk baris tersebut
+                            return '<button class="btn btn-primary btn-sm pilihobat text-center" ' +
+                                'data-kode_barang="' + row.kode_barang + '" ' +
+                                'data-nama_barang="' + row.nama_barang + '" ' +
+                                'data-nama_satuan="' + row.satuan_besar + '" ' +
+                                // Tambahkan atribut lain yang dibutuhkan di sini
+                                ' data-bs-dismiss="modal"><i class="bi bi-arrow-down-left-square"></i></button>';
+                        }
+                    }
+                ]
+            });
         })
 
         function kembali() {
@@ -366,10 +566,93 @@
                 }
             });
         }
+        $('body').off('click', '.pilihobat').on('click', '.pilihobat', function(event) {
+            event.preventDefault();
+            var kode_barang = $(this).data('kode_barang');
+            var nama_barang = $(this).data('nama_barang');
+            var satuan_barang = $(this).data('nama_satuan');
+            $('#satuan').val(satuan_barang).trigger('change');
+            $('#namabarangpilihan').val(nama_barang)
+            $('#kodebarang').val(kode_barang)
+            Swal.fire({
+                title: nama_barang + " Berhasil dipilih",
+                icon: "success",
+                timer: 1500,
+                showConfirmButton: false
+            });
+        });
 
-        // const inputMask = document.getElementById('totalpo_mask');
-        // const inputAsli = document.getElementById('totalpo_asli');
-        // const labelAsli = document.getElementById('label_asli');
+        function prosesbarang() {
+            var data = $('.formbarangpilihan').serializeArray();
+            nama = $('#namabarangpilihan').val()
+            $.ajax({
+                type: 'post',
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    data: JSON.stringify(data)
+                },
+                url: '<?= route('prosesbarangpilihanPO') ?>',
+                error: function(response) {
+                    spinner_off()
+                    alert('error')
+                },
+                success: function(response) {
+                    spinner_off()
+                    if (response.status == 'success') {
+                        $('.draft_barang').append(response.html);
+                        Swal.fire({
+                            title: nama + " Berhasil ditambahkan dilist ...",
+                            icon: "success",
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                    } else {
+                        Swal.fire({
+                            title: response.message,
+                            icon: "error",
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                    }
+                }
+            });
+        }
+        function hitungtotal() {
+            var data = $('.v_list_barang').serializeArray();
+            $.ajax({
+                type: 'post',
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    data: JSON.stringify(data)
+                },
+                url: '<?= route('totalhitungpurchaseorder') ?>',
+                error: function(response) {
+                    spinner_off()
+                    alert('error')
+                },
+                success: function(response) {
+                    spinner_off()
+                    if (response.status == 'success') {
+                      $('#totalpembelian').val(response.total_format)
+                      $('#totalpembelian').focus();
+                    } else {
+                        Swal.fire({
+                            title: response.message,
+                            icon: "error",
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                    }
+                }
+            });
+        }
+        $('.draft_barang').on("click", ".remove_field", function(e) {
+            e.preventDefault();
+            $(this).closest('.row').remove();
+        });
+        const inputMask = document.getElementById('hrgasatuan');
+        const inputAsli = document.getElementById('hrgasatuanasli');
+        const labelAsli = document.getElementById('labelasli');
 
         // const inputMask2 = document.getElementById('ppn_mask');
         // const inputAsli2 = document.getElementById('ppn_asli');
@@ -378,17 +661,17 @@
         // const inputMask3 = document.getElementById('totalhutang_mask');
         // const inputAsli3 = document.getElementById('totalhutang_asli');
         // const labelAsli3 = document.getElementById('label_asli_totalhutang');
-        // inputMask.addEventListener('keyup', function(e) {
-        //     // 1. Ambil angka saja dari input
-        //     let nominal = this.value.replace(/[^,\d]/g, '').toString();
+        inputMask.addEventListener('keyup', function(e) {
+            // 1. Ambil angka saja dari input
+            let nominal = this.value.replace(/[^,\d]/g, '').toString();
 
-        //     // 2. Masukkan angka bersih ke input hidden & label
-        //     inputAsli.value = nominal;
-        //     labelAsli.innerText = nominal;
+            // 2. Masukkan angka bersih ke input hidden & label
+            inputAsli.value = nominal;
+            labelAsli.innerText = nominal;
 
-        //     // 3. Ubah tampilan input menjadi format ribuan
-        //     this.value = formatRupiah(nominal);
-        // });
+            // 3. Ubah tampilan input menjadi format ribuan
+            this.value = formatRupiah(nominal);
+        });
         // inputMask2.addEventListener('keyup', function(e) {
         //     // 1. Ambil angka saja dari input
         //     let nominal = this.value.replace(/[^,\d]/g, '').toString();
@@ -411,19 +694,19 @@
         //     // 3. Ubah tampilan input menjadi format ribuan
         //     this.value = formatRupiah(nominal);
         // });
-        // /* Fungsi Format Ribuan */
-        // function formatRupiah(angka) {
-        //     let number_string = angka.replace(/[^,\d]/g, '').toString(),
-        //         split = number_string.split(','),
-        //         sisa = split[0].length % 3,
-        //         rupiah = split[0].substr(0, sisa),
-        //         ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+        /* Fungsi Format Ribuan */
+        function formatRupiah(angka) {
+            let number_string = angka.replace(/[^,\d]/g, '').toString(),
+                split = number_string.split(','),
+                sisa = split[0].length % 3,
+                rupiah = split[0].substr(0, sisa),
+                ribuan = split[0].substr(sisa).match(/\d{3}/gi);
 
-        //     if (ribuan) {
-        //         separator = sisa ? '.' : '';
-        //         rupiah += separator + ribuan.join('.');
-        //     }
-        //     return split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
-        // }
+            if (ribuan) {
+                separator = sisa ? '.' : '';
+                rupiah += separator + ribuan.join('.');
+            }
+            return split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
+        }
     </script>
 @endsection
