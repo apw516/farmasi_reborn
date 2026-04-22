@@ -209,7 +209,7 @@ class MODEL_APOTEK_ONLINE extends Model
     {
         $client = new Client();
         $data = json_encode($dataobat);
-        $url = 'https://apijkn-dev.bpjs-kesehatan.go.id/apotek-rest-dev/pelayanan/obat/hapus/';
+        $url = 'https://apijkn-dev.bpjs-kesehatan.go.id/apotek-rest-dev/pelayanan/obat/hapus';
         $signature = $this->signature();
         // try {
             $response = $client->request('DELETE', $url, [

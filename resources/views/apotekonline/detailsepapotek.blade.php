@@ -50,6 +50,73 @@
         </table>
     </div>
     <div class="card-footer">
-
+        <button class="btn btn-danger btn-sm hapusresep" noapotik="{{ $DATA->response->noSepApotek }}"
+            nosep="{{ $DATA->response->noSepAsal }}" noresep="{{ $DATA->response->noresep }}"><i
+                class="bi bi-trash3"></i></button>
     </div>
 </div>
+<script>
+    $(".hapusresep").on('click', function(event) {
+        noapotik = $(this).attr('noapotik')
+        noresep = $(this).attr('noresep')
+        nosep = $(this).attr('nosep')
+        Swal.fire({
+            title: "Anda yakin ?",
+            text: "Bridging data resep dengan nomor resep : " + noresep + " SEP ASAL : " + nosep +
+                " akan dihapus ...",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Ya, Hapus ..."
+        }).then((result) => {
+            if (result.isConfirmed) {
+                hapusdataresep(noapotik, noresep, nosep)
+            }
+        });
+    })
+
+    function hapusdataresep(noapotik, noresep, nosep) {
+        Swal.fire({
+            title: "Anda yakin ?",
+            text: "Data Resep akan dihapus ...",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Ya Hapus"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                spinner_on()
+                $.ajax({
+                    type: 'post',
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        nosep,
+                        noapotik,
+                        noresep
+                    },
+                    url: '<?= route('hapusresepapotekonline') ?>',
+                    success: function(response) {
+                        spinner_off()
+                        if (response.kode == '500') {
+                            // Kondisi jika validasi gagal atau ada error sistem
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Ups!',
+                                text: response.message,
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'OK!',
+                                text: response.message,
+                            });
+                            location.reload()
+                        }
+                    }
+                });
+            }
+        });
+    }
+</script>

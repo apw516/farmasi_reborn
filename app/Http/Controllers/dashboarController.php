@@ -15,7 +15,6 @@ class dashboarController extends Controller
         $date_start = $now->format('Y-m-d');
         $date_end = $end->format('Y-m-d');
         $menu = 'Dashboard';
-       
         return view('Dashboard.index', compact([
             'menu',
             'date_start',

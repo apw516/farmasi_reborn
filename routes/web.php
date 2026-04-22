@@ -25,11 +25,15 @@ Route::get('/home', [dashboarController::class, 'Index'])->middleware('guest')->
 
 
 Route::get('/indexpelayananresep', [DepoFarmasiController::class, 'indexpelayananresep'])->middleware('auth')->name('indexpelayananresep');
+Route::get('/indexdatapelayanan', [DepoFarmasiController::class, 'indexdatapelayanan'])->middleware('auth')->name('indexdatapelayanan');
 Route::post('/ambildatakunjungan', [DepoFarmasiController::class, 'ambildatakunjungan'])->middleware('auth')->name('ambildatakunjungan');
 Route::post('/ambil_form_pelayanan_obat', [DepoFarmasiController::class, 'ambil_form_pelayanan_obat'])->middleware('auth')->name('ambil_form_pelayanan_obat');
 Route::post('/simpanresep', [DepoFarmasiController::class, 'simpanresep_3'])->middleware('auth')->name('simpanresep');
 Route::post('/detailresep', [DepoFarmasiController::class, 'detailresep'])->middleware('auth')->name('detailresep');
 Route::get('/ambilkartustok', [DepoFarmasiController::class, 'ambilkartustok'])->middleware('auth')->name('stok.data');
+Route::get('/get.riwayat.pelayanan', [DepoFarmasiController::class, 'ambilriwayatpelayanan'])->middleware('auth')->name('get.riwayat.pelayanan');
+Route::get('/get.detail.pelayanan', [DepoFarmasiController::class, 'ambildetailpelayanan'])->middleware('auth')->name('get.detail.pelayanan');
+Route::post('/layanan.batal', [DepoFarmasiController::class, 'batallayananfarmasi'])->middleware('auth')->name('layanan.batal');
 
 
 
@@ -51,6 +55,8 @@ Route::post('/simpanobatracikan', [DepoFarmasiController::class, 'simpanobatraci
 Route::post('/ambillistobatracikan', [DepoFarmasiController::class, 'ambillistobatracikan'])->middleware('auth')->name('ambillistobatracikan');
 Route::post('/ambilobatracik', [DepoFarmasiController::class, 'ambilobatracik'])->middleware('auth')->name('ambilobatracik');
 Route::post('/hapusracikan', [DepoFarmasiController::class, 'hapusracikan'])->middleware('auth')->name('hapusracikan');
+Route::post('/retursatuan', [DepoFarmasiController::class, 'retursatuan'])->middleware('auth')->name('retursatuan');
+Route::post('/ambildetailretur', [DepoFarmasiController::class, 'ambildetailretur'])->middleware('auth')->name('ambildetailretur');
 
 
 
@@ -63,8 +69,9 @@ Route::get('/indexcreatesep', [VclaimController::class, 'indexcreatesep'])->midd
 Route::post('/createsep', [VclaimController::class, 'createsep'])->middleware('auth')->name('createsep');
 
 
-
-
+Route::get('/gudang/detail-batch', [GudangFarmasiController::class, 'getDetailBatch'])->name('gudang.detailbatch');
+Route::get('/gudang.stokdatabarang', [GudangFarmasiController::class, 'stokdatabarang'])->middleware('auth')->name('gudang.stokdatabarang');
+Route::get('/indexstokbarang', [GudangFarmasiController::class, 'indexstokbarang'])->middleware('auth')->name('indexstokbarang');
 Route::get('/indexmasterstok', [GudangFarmasiController::class, 'indexmasterstok'])->name('indexmasterstok');
 Route::get('/ambildatastok', [GudangFarmasiController::class, 'ambildatastok'])->name('ambildatastok');
 Route::get('/indexterimabarangpo', [GudangFarmasiController::class, 'indexterimabarangpo'])->name('indexterimabarangpo');
@@ -74,6 +81,22 @@ Route::post('/ambildatatgpoheader', [GudangFarmasiController::class, 'ambildatat
 Route::post('/ambilformdetailpo', [GudangFarmasiController::class, 'ambilformdetailpo'])->name('ambilformdetailpo');
 Route::post('/prosesbarangpilihanPO', [GudangFarmasiController::class, 'prosesbarangpilihanPO'])->name('prosesbarangpilihanPO');
 Route::post('/totalhitungpurchaseorder', [GudangFarmasiController::class, 'totalhitungpurchaseorder'])->name('totalhitungpurchaseorder');
+Route::post('/simpanpoheaderfinal', [GudangFarmasiController::class, 'simpanpoheaderfinal'])->name('simpanpoheaderfinal');
+Route::post('/po_header.data', [GudangFarmasiController::class, 'ambildatatgpoheader'])->name('po_header.data');
+Route::get('/gudang.data_mutasi', [GudangFarmasiController::class, 'ambildatamutasi'])->name('gudang.data_mutasi');
+Route::post('/gudang.purchase-order.ambil_detail_po', [GudangFarmasiController::class, 'detailpo'])->name('gudang.purchase-order.ambil_detail_po');
+Route::get('/indexstoksediaanbarang', [GudangFarmasiController::class, 'indexstoksediaanbarang'])->name('indexstoksediaanbarang');
+Route::get('/indexmutasibarang', [GudangFarmasiController::class, 'indexmutasibarang'])->name('indexmutasibarang');
+Route::get('/ambildatasediaan', [GudangFarmasiController::class, 'ambildatasediaan'])->name('ambildatasediaan');
+Route::post('/ambilformmutasi', [GudangFarmasiController::class, 'ambilformmutasi'])->name('ambilformmutasi');
+Route::post('/simpanmutasi', [GudangFarmasiController::class, 'simpanmutasi'])->name('simpanmutasi');
+Route::post('/pencarianbarang', [GudangFarmasiController::class, 'pencarianbarang'])->name('pencarianbarang');
+Route::get('/ambilbaranguntukpo', [GudangFarmasiController::class, 'ambilbarang'])->name('ambilbaranguntukpo');
+Route::post('/batalkanpo', [GudangFarmasiController::class, 'batalkanpo'])->name('batalkanpo');
+Route::post('/pencariansediaanbarang', [GudangFarmasiController::class, 'pencariansediaanbarang'])->name('pencariansediaanbarang');
+Route::post('/mutasibarang.simpan', [GudangFarmasiController::class, 'simpanmutasibanyak'])->name('mutasibarang.simpan');
+
+
 
 
 Route::get('/indexmappingbarang', [MasterController::class, 'indexmappingbarang'])->name('indexmappingbarang');

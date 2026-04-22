@@ -765,7 +765,6 @@
         e.preventDefault();
         $(this).closest('.row').remove();
     });
-
     function prosesracikan() {
         spinner_on()
         var dataheader = $('.form_header_racikan').serializeArray();
@@ -858,7 +857,6 @@
     $(document).on('click', '.btn-hapus', function() {
         $(this).closest('.item-obat').remove();
     });
-
     function simpanobatracikan() {
         Swal.fire({
             title: "Anda yakin ?",
@@ -886,7 +884,6 @@
             }
         });
     }
-
     function simpandata() {
         kode_kunjungan = $('#kode_kunjungan').val()
         var dataheader = $('.form_header_racikan').serializeArray();
@@ -926,7 +923,6 @@
             }
         });
     }
-
     function clearFormByClass(className) {
         let container = $('.' + className);
         container.find('input:text, input:password, input[type=number], input[type=email], textarea').val('');
@@ -935,7 +931,6 @@
         container.find('.is-invalid').removeClass('is-invalid');
         container.find('.text-danger').empty();
     }
-
     function tampilkanriwayatbpjs() {
         nomorkartu = $('#nomorkartu').val()
         tglawal = $('#tanggalawalcari').val()
@@ -960,7 +955,6 @@
             }
         });
     }
-
     function tampilkanriwayatrs() {
         rm = $('#nomorrmcari').val()
         tglawal = $('#tanggalawalcaribyrs').val()

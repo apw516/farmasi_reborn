@@ -5,13 +5,15 @@
                     Barang</label>
                 <input readonly type="text" value="{{ $dataarray['kode_barang'] }}" class="form-control form-control-sm"
                     id="list_kodebarang" name="list_kodebarang" placeholder="kode barang ...">
+                <input readonly type="text" value="{{ $dataarray['id_pabrik'] }}" class="form-control form-control-sm"
+                    id="list_idpabrik" name="list_idpabrik" placeholder="kode barang ...">
             </div>
         </div>
         <div class="col-md-3">
             <div class="mb-3">
                 <label for="exampleInputEmail1" class="form-label">Nama Barang</label>
                 <input readonly type="text" class="form-control form-control-sm" id="list_nama_barang"
-                    name="list_nama_barang" placeholder="qty barang ..." value="{{ $dataarray['nama_barang'] }}">
+                    name="list_nama_barang" placeholder="qty barang ..." value="{{ $dataarray['nama_barang'] }} | {{ $dataarray['nama_pabrik']}}">
             </div>
         </div>
         <div class="col-md-1">
@@ -22,7 +24,7 @@
             </div>
         </div>
         <div class="col-md-1">
-            <div class="mb-3">
+            <div hidden class="mb-1">
                 <label for="exampleFormControlInput1" class="form-label">Satuan</label>
                 <select class="form-select form-select-sm" aria-label="Default select example" id="list_satuan"
                     name="list_satuan">
@@ -32,6 +34,38 @@
                         </option>
                     @endforeach
                 </select>
+            </div>
+            <div hidden class="mb-1">
+                <label for="exampleFormControlInput1" class="form-label">Satuan Sedang</label>
+                <select class="form-select form-select-sm" aria-label="Default select example" id="list_satuan_sedang"
+                    name="list_satuan_sedang">
+                    @foreach ($satuana as $s)
+                        <option value="{{ $s->kode_satuan }}" @if ($dataarray['satuan_sedang'] == $s->kode_satuan) selected @endif>
+                            {{ $s->nama_satuan }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+            <div hidden class="mb-1">
+                <label for="exampleFormControlInput1" class="form-label">Rasio Sedang</label>
+                <input readonly type="text" class="form-control form-control-sm" id="list_rasio_sedang" name="list_rasio_sedang"
+                    placeholder="qty barang ..." value="{{ $dataarray['rasio_sedang'] }}">
+            </div>
+            <div class="mb-1">
+                <label for="exampleFormControlInput1" class="form-label">Satuan Kecil</label>
+                <select class="form-select form-select-sm" aria-label="Default select example" id="list_satuan_kecil"
+                    name="list_satuan_kecil">
+                    @foreach ($satuana as $s)
+                        <option value="{{ $s->kode_satuan }}" @if ($dataarray['satuan_kecil'] == $s->kode_satuan) selected @endif>
+                            {{ $s->nama_satuan }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+            <div hidden class="mb-1">
+                <label for="exampleFormControlInput1" class="form-label">Rasio kecil</label>
+                <input readonly type="text" class="form-control form-control-sm" id="list_rasio_kecil" name="list_rasio_kecil"
+                    placeholder="qty barang ..." value="{{ $dataarray['rasio_kecil'] }}">
             </div>
         </div>
         <div class="col-md-1">

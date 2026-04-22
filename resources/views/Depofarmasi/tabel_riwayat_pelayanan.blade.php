@@ -29,7 +29,7 @@
                     <td>{{ $item->nama_pasien }}</td>
                     {{-- <td>{{ $item->alamat_pasien }}</td> --}}
                     <td>{{ $item->no_sep }}</td>
-                        {{-- <td>{{ $item->noResep }}</td> --}}
+                    {{-- <td>{{ $item->noResep }}</td> --}}
                     <td>
                         @if (strlen($item->status_terkirim) == 0)
                             Tidak Bridging
@@ -112,6 +112,7 @@
         })
 
         function retur(id) {
+            spinner_on()
             $.ajax({
                 type: 'post',
                 data: {
@@ -119,6 +120,14 @@
                     id
                 },
                 url: '<?= route('returresep') ?>',
+                error: function(response) {
+                    spinner_off()
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Ups!',
+                        text: response.message,
+                    });
+                },
                 success: function(response) {
                     spinner_off()
                     if (response.kode == '500') {

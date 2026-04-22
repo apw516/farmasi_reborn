@@ -116,7 +116,7 @@ class ApotekOnlineController extends dashboarController
         ];
         try {
             $DATA = $v->daftar_resep($data);
-            // dd($DATA);
+            dd($DATA);
             if ($DATA->metaData->code == 200 && $DATA->metaData->message == 'OK') {
                 return view('apotekonline.tabel_daftar_resep', compact([
                     'DATA'

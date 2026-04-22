@@ -72,7 +72,7 @@
     <!-- apexcharts -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/apexcharts@3.37.1/dist/apexcharts.css"
         integrity="sha256-4MX+61mt9NVvvuPjUWdUdyfZfxSB1/Rf9WtqRHgG5S0=" crossorigin="anonymous" />
-   
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
     <style>
         #my {
             zoom: 90%;
@@ -108,6 +108,19 @@
 
         .modal {
             overflow: auto !important;
+        }
+
+        /* Memberikan jarak pada container pencarian (Filter) */
+        .dataTables_wrapper .dataTables_filter {
+            margin-top: 15px;
+            margin-bottom: 15px;
+        }
+
+        /* Memberikan jarak pada container pagination dan info */
+        .dataTables_wrapper .dataTables_info,
+        .dataTables_wrapper .dataTables_paginate {
+            margin-top: 15px;
+            margin-bottom: 15px;
         }
     </style>
 </head>
