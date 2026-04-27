@@ -127,9 +127,8 @@ class ApotekOnlineController extends dashboarController
             'TglMulai' => $awal,
             'TglAkhir' => $akhir,
         ];
+        $DATA = $v->daftar_resep($data);
         try {
-            $DATA = $v->daftar_resep($data);
-            dd($DATA);
             if ($DATA->metaData->code == 200 && $DATA->metaData->message == 'OK') {
                 return view('apotekonline.tabel_daftar_resep', compact([
                     'DATA'
