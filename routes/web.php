@@ -106,19 +106,25 @@ Route::get('/indexmasterbarang', [MasterController::class, 'indexmasterbarang'])
 Route::get('/indexmasterobatbpjs', [MasterController::class, 'indexmasterobatbpjs'])->name('indexmasterobatbpjs');
 Route::get('/ambilbarangdpho', [MasterController::class, 'ambilbarangdpho'])->name('ambilbarangdpho');
 Route::get('/ambilbarang', [MasterController::class, 'ambilbarang'])->name('ambilbarang');
+Route::get('/ambilbarangbelummapping', [MasterController::class, 'ambilbarangbelummapping'])->name('ambilbarangbelummapping');
 Route::get('/ambilsupplier', [MasterController::class, 'ambilsupplier'])->name('ambilsupplier');
 Route::get('/ambilbarangbpjs', [MasterController::class, 'ambilbarangbpjs'])->name('ambilbarangbpjs');
 Route::post('/simpanmappingobat', [MasterController::class, 'simpanmappingobat'])->name('simpanmappingobat');
+Route::post('/simpanmappingbaru', [MasterController::class, 'simpanmappingbaru'])->name('simpanmappingbaru');
+Route::get('/cari.dpho', [MasterController::class, 'caridpho'])->name('cari.dpho');
 
 
+Route::get('/indexperencanaan', [laporanController::class, 'indexperencanaan'])->name('indexperencanaan');
 Route::get('/indexlaporanmasterpengadaan', [laporanController::class, 'indexlaporanmasterpengadaan'])->name('indexlaporanmasterpengadaan');
 Route::get('/indexrencanapengadaanbarang', [laporanController::class, 'indexrencanapengadaanbarang'])->name('indexrencanapengadaanbarang');
 Route::post('/ambildatalaporanpembelianbarang', [laporanController::class, 'ambildatalaporanpembelianbarang'])->name('ambildatalaporanpembelianbarang');
 Route::post('/ambildatarencanapengadaan', [laporanController::class, 'getLaporanAnalisisStok'])->name('ambildatarencanapengadaan');
+Route::post('/buatrencanapengadaan', [laporanController::class, 'buatrencanapengadaan'])->name('buatrencanapengadaan');
 
 
 
 Route::post('/downloadrefdpho', [ApotekOnlineController::class, 'downloadrefdpho'])->name('downloadrefdpho');
+Route::get('/indexreferensidpho', [ApotekOnlineController::class, 'indexreferensidpho'])->name('indexreferensidpho');
 Route::post('/hapusresepapotekonline', [ApotekOnlineController::class, 'hapusresepapotekonline'])->name('hapusresepapotekonline');
 Route::get('/indexcarisepaptonline', [ApotekOnlineController::class, 'indexcarisepaptonline'])->middleware('auth')->name('indexcarisepaptonline');
 Route::post('/carisep_apotekonline', [ApotekOnlineController::class, 'carisep_apotekonline'])->middleware('auth')->name('carisep_apotekonline');

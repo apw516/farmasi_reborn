@@ -274,6 +274,7 @@ class GudangFarmasiController extends MasterController
                 ->select([
                     'b.kode_barang',
                     'b.nama_barang',
+                    'b.id_pabrik',
                     'b.satuan_besar',
                     'b.satuan',
                     'b.sediaan',
@@ -995,7 +996,6 @@ class GudangFarmasiController extends MasterController
                     $bb[] = $dataSet2;
                 }
             }
-            // dd($bb);
             $kode_po = $this->get_kode_po();
             $data_save_header = [
                 'kode_po' => $kode_po,
@@ -1030,6 +1030,8 @@ class GudangFarmasiController extends MasterController
                 $isi = $qty  * $isi_kecil;
                 $isi_qty = $qty * $isi_sedang;
                 // dd($qty);
+                $id_pabrik = $b['list_idpabrik'];
+                MasterBarang::where('kode_barang',$b['list_kodebarang'])->update(['id_pabrik' => $id_pabrik]);
                 $hrg_satuan_kecil = $b['list_hrgasatuanasli'];
                 $data_save_detail = [
                     'kode_po' => $kode_po,

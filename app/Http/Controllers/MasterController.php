@@ -168,13 +168,13 @@ class MasterController extends Controller
     {
         if ($request->ajax()) {
             // $data = MasterBarang::query();
-            // $data = MasterBarang::orderBy('id', 'desc');
+            // $data = MasterBarang::orderBy('id', 'desc');\
             $data = DB::table('mt_barang')
                 ->leftJoin(
-                    'master_barang_x_master_obat_bpjs',
-                    'mt_barang.kode_barang',
+                    'apt_online_ref_dpho',
+                    'mt_barang.kode_obat_bpjs',
                     '=',
-                    'master_barang_x_master_obat_bpjs.kode_barang'
+                    'apt_online_ref_dpho.kodeobat'
                 )
                 ->select([
                     'mt_barang.kode_barang', // Gunakan prefix tabel
@@ -183,8 +183,36 @@ class MasterController extends Controller
                     'mt_barang.sediaan',
                     'mt_barang.dosis',
                     'mt_barang.aturan_pakai',
-                    'master_barang_x_master_obat_bpjs.kode_obat_bpjs' // Contoh kolom dari tabel BPJS
+                    'apt_online_ref_dpho.kodeobat', // Contoh kolom dari tabel BPJS
+                    'apt_online_ref_dpho.namaobat', // Contoh kolom dari tabel BPJS
+                    'apt_online_ref_dpho.generik', // Contoh kolom dari tabel BPJS
                 ])
+                ->where('mt_barang.act', 1)
+                ->orderBy('mt_barang.kode_barang', 'desc');
+            return DataTables::of($data)
+                ->filterColumn('kodeobat', function ($query, $keyword) {
+                    // Gunakan tabel apt_online_ref_dpho, bukan mt_barang
+                    $query->where('apt_online_ref_dpho.kodeobat', 'LIKE', "%$keyword%");
+                })
+                ->make(true);
+        }
+    }
+    public function ambilbarangbelummapping(Request $request)
+    {
+        if ($request->ajax()) {
+            // $data = MasterBarang::query();
+            // $data = MasterBarang::orderBy('id', 'desc');\
+            $data = DB::table('mt_barang')
+                ->select([
+                    'mt_barang.kode_barang', // Gunakan prefix tabel
+                    'mt_barang.nama_barang',
+                    'mt_barang.satuan_besar',
+                    'mt_barang.sediaan',
+                    'mt_barang.dosis',
+                    'mt_barang.aturan_pakai',
+                ])
+                ->where('mt_barang.act', 1)
+                ->where('mt_barang.kode_obat_bpjs', '=', 0)
                 ->orderBy('mt_barang.kode_barang', 'desc');
             return DataTables::of($data)
                 ->addIndexColumn() // Untuk nomor urut otomatis
@@ -261,6 +289,38 @@ class MasterController extends Controller
             die;
         }
     }
+    public function simpanmappingbaru(Request $request)
+    {
+        try {
+            $dataobat = json_decode($_POST['dataobat'], true);
+            // dd($arraybpjs);
+            foreach ($dataobat as $nama2) {
+                $index2 = $nama2['name'];
+                $value2 = $nama2['value'];
+                $dataSet2[$index2] = $value2;
+                if ($index2 == 'ref_dpho') {
+                    $arraydata[] = $dataSet2;
+                }
+            }
+            foreach ($arraydata as $s) {
+                MasterBarang::where('kode_barang', $s['kode_barang'])->update(['kode_obat_bpjs' => $s['ref_dpho']]);
+            }
+            $data = [
+                'kode' => 200,
+                'message' => 'Sukses, data berhasil disimpan ...'
+            ];
+            echo json_encode($data);
+            die;
+        } catch (\Exception $e) {
+            $err = $e->getMessage();
+            $data = [
+                'kode' => 500,
+                'message' => 'Ops error ! ...( ' . $err . ' )'
+            ];
+            echo json_encode($data);
+            die;
+        }
+    }
     public function get_now()
     {
         $dt = Carbon::now()->timezone('Asia/Jakarta');
@@ -275,5 +335,24 @@ class MasterController extends Controller
         $date = $dt->toDateString();
         $now = $date;
         return $now;
+    }
+    public function caridpho(Request $request)
+    {
+        $cari = $request->q;
+
+        $data = DB::table('apt_online_ref_dpho')
+            ->where('namaobat', 'LIKE', "%$cari%")
+            ->limit(20)
+            ->get();
+
+        $response = [];
+        foreach ($data as $d) {
+            $response[] = [
+                'id'    => $d->kodeobat, // Sesuaikan primary key
+                'text'  => $d->namaobat . ' - ' . $d->generik // Tampilan di dropdown
+            ];
+        }
+
+        return response()->json($response);
     }
 }

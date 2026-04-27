@@ -55,6 +55,19 @@ class ApotekOnlineController extends dashboarController
             die;
         }
     }
+    function indexreferensidpho(Request $request)
+    {
+        $now = Carbon::now()->startOfMonth();
+        $end = Carbon::now()->endOfMonth();
+        $date_start = $now->format('Y-m-d');
+        $date_end = $end->format('Y-m-d');
+        $menu = 'indexreferensidpho';
+        return view('apotekonline.indexrefdpho', compact([
+            'menu',
+            'date_start',
+            'date_end'
+        ]));
+    }
     function carisep_apotekonline(Request $request)
     {
         $v = new MODEL_APOTEK_ONLINE();
@@ -190,7 +203,7 @@ class ApotekOnlineController extends dashboarController
         $akhir = $request->tglakhir;
         $rm = $request->rm;
         $data1 = db::select("SELECT kode_kunjungan,tgl_masuk,fc_nama_unit1(kode_unit) AS unit_tujuan,fc_NAMA_PARAMEDIS1(kode_paramedis) AS nama_dokter
-        FROM ts_kunjungan WHERE  no_rm = ? ORDER BY kode_kunjungan DESC",[$rm]);
+        FROM ts_kunjungan WHERE  no_rm = ? ORDER BY kode_kunjungan DESC", [$rm]);
 
         // dd($data1);
         $data = db::select("SELECT a.`kode_kunjungan`
@@ -209,9 +222,10 @@ class ApotekOnlineController extends dashboarController
         INNER JOIN ts_layanan_detail c ON b.`id` = c.`row_id_header`
         WHERE a.no_rm = ? 
         AND c.`kode_barang` IS NOT NULL
-        ORDER BY kode_kunjungan DESC",[$rm]);
-        return view('Depofarmasi.riwayatobatrs',compact([
-            'data1','data'
+        ORDER BY kode_kunjungan DESC", [$rm]);
+        return view('Depofarmasi.riwayatobatrs', compact([
+            'data1',
+            'data'
         ]));
     }
     function indexdataklaim()

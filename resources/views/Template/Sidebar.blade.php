@@ -87,6 +87,13 @@
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a href="{{ route('indexreferensidpho') }}"
+                        class="nav-link @if ($menu == 'indexreferensidpho') active @endif">
+                        <i class="nav-icon bi bi-file-bar-graph-fill"></i>
+                        <p>Referensi DPHO</p>
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a href="{{ route('indexdataklaim') }}"
                         class="nav-link @if ($menu == 'indexdataklaim') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
@@ -144,7 +151,7 @@
                         <p>Retur Ke Supplier</p>
                     </a>
                 </li>
-                <li   class="nav-item">
+                <li class="nav-item">
                     <a href="{{ route('indexterimabarangpo') }}"
                         class="nav-link @if ($menu == 'indexmutasistok') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
@@ -165,33 +172,11 @@
                         <p>Riwayat Kartu Stok</p>
                     </a>
                 </li>
-                <li class="nav-header">Data Master</li>
-                <li class="nav-item">
-                    <a href="{{ route('indexmasterdpho') }}"
-                        class="nav-link @if ($menu == 'indexmasterdpho') active @endif">
-                        <i class="nav-icon bi bi-file-bar-graph-fill"></i>
-                        <p>Master DPHO</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ route('indexmappingbarang') }}"
-                        class="nav-link @if ($menu == 'indexmappingbarang') active @endif">
-                        <i class="nav-icon bi bi-file-bar-graph-fill"></i>
-                        <p>Mapping Master Barang</p>
-                    </a>
-                </li>
                 <li class="nav-item">
                     <a href="{{ route('indexmasterbarang') }}"
                         class="nav-link @if ($menu == 'indexmasterbarang') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
                         <p>Master Barang</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ route('indexmasterobatbpjs') }}"
-                        class="nav-link @if ($menu == 'indexmasterobatbpjs') active @endif">
-                        <i class="nav-icon bi bi-file-bar-graph-fill"></i>
-                        <p>Master Obat Bpjs</p>
                     </a>
                 </li>
                 <li class="nav-item">
@@ -201,12 +186,34 @@
                         <p>Master Supplier Obat</p>
                     </a>
                 </li>
+                <li hidden  class="nav-header">Data Master</li>
+                <li hidden  class="nav-item">
+                    <a href="{{ route('indexmasterdpho') }}"
+                        class="nav-link @if ($menu == 'indexmasterdpho') active @endif">
+                        <i class="nav-icon bi bi-file-bar-graph-fill"></i>
+                        <p>Master DPHO</p>
+                    </a>
+                </li>
+                <li hidden  class="nav-item">
+                    <a href="{{ route('indexmappingbarang') }}"
+                        class="nav-link @if ($menu == 'indexmappingbarang') active @endif">
+                        <i class="nav-icon bi bi-file-bar-graph-fill"></i>
+                        <p>Mapping Master Barang</p>
+                    </a>
+                </li>
+                <li  hidden class="nav-item">
+                    <a href="{{ route('indexmasterobatbpjs') }}"
+                        class="nav-link @if ($menu == 'indexmasterobatbpjs') active @endif">
+                        <i class="nav-icon bi bi-file-bar-graph-fill"></i>
+                        <p>Master Obat Bpjs</p>
+                    </a>
+                </li>
                 <li class="nav-header">Data Laporan</li>
                 <li class="nav-item">
-                    <a href="{{ route('indexrencanapengadaanbarang') }}"
-                        class="nav-link @if ($menu == 'indexrencanapengadaanbarang') active @endif">
+                    <a href="{{ route('indexperencanaan') }}"
+                        class="nav-link @if ($menu == 'indexperencanaan') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
-                        <p>Pengadaan Barang</p>
+                        <p>Perencanaan Pengadaan</p>
                     </a>
                 </li>
                 {{-- <li class="nav-item">

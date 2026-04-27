@@ -60,6 +60,7 @@
                             'data-nama_barang="' + row.nama_barang + '" ' +
                             'data-nama_satuan="' + row.satuan_besar + '" ' +
                             'nama_satuan_kecil="' + row.satuan + '" ' +
+                            'id_pabrik="' + row.id_pabrik + '" ' +
                             'isi="' + row.isi + '" ' +
                             // Tambahkan atribut lain yang dibutuhkan di sini
                             ' data-bs-dismiss="modal"><i class="bi bi-arrow-down-left-square"></i></button>';

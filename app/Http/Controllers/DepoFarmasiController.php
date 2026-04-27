@@ -153,7 +153,7 @@ class DepoFarmasiController extends Controller
     {
         $keyword = $Request->input('keyword');
         $kodeUnitFilter = auth()->user()->unit; // Sesuaikan logika unit Anda
-
+        
         $subQuery = DB::table('ti_kartu_stok')
             ->select('kode_barang', 'kode_unit', DB::raw('MAX(NO) as max_id'))
             ->where('kode_unit', $kodeUnitFilter)

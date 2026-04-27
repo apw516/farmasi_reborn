@@ -673,8 +673,11 @@
             var nama_barang = $(this).data('nama_barang');
             var satuan_barang = $(this).data('nama_satuan');
             var nama_satuan_kecil = $(this).attr('nama_satuan_kecil');
+            var id_pabrik = $(this).attr('id_pabrik');
             $('#satuan').val(satuan_barang).trigger('change');
             $('#satuan_kecil').val(nama_satuan_kecil).trigger('change');
+            $('#satuan_kecil').val(nama_satuan_kecil).trigger('change');
+            $('#pabrikan').val(id_pabrik).trigger('change');
             $('#namabarangpilihan').val(nama_barang)
             $('#kodebarang').val(kode_barang)
             $('#rasio_kecil').val(isi)
@@ -1103,8 +1106,6 @@
                 }
             });
         }
-
-
         function cariobat() {
             kodesupplier = $('#supplier_id').val()
             kategori_barang = $('#kategoribarang').val()

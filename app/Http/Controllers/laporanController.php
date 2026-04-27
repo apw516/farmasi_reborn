@@ -8,6 +8,21 @@ use Carbon\Carbon;
 
 class laporanController extends Controller
 {
+    public function indexperencanaan()
+    {
+        $now = Carbon::now()->startOfMonth();
+        $end = Carbon::now()->endOfMonth();
+        $date_start = $now->format('Y-m-d');
+        $date_end = $end->format('Y-m-d');
+        $menu = 'indexperencanaan';
+        $tipe = db::select('select * from mt_tipe_barang');
+        return view('Laporan.indexperencanaanpembelian', compact([
+            'menu',
+            'date_start',
+            'date_end',
+            'tipe'
+        ]));
+    }
     public function indexlaporanmasterpengadaan()
     {
         $now = Carbon::now()->startOfMonth();
@@ -28,10 +43,12 @@ class laporanController extends Controller
         $date_start = $now->format('Y-m-d');
         $date_end = $end->format('Y-m-d');
         $menu = 'indexrencanapengadaanbarang';
+        $tipe = db::select('select * from mt_tipe_barang');
         return view('Laporan.indexrencanapengadaanbarang', compact([
             'menu',
             'date_start',
-            'date_end'
+            'date_end',
+            'tipe'
         ]));
     }
     // public function ambildatarencanapengadaan(Request $request)
@@ -98,6 +115,76 @@ class laporanController extends Controller
     //         ->get();
     //     dd($dataPO);
     // }
+    public function buatrencanapengadaan(Request $request)
+    {
+        $kode_tipe = $request->kode_tipe;
+        // $endDate = Carbon::parse($tgl);
+        // 1. Tentukan Parameter Tanggal (Misal: Hari ini atau dari Request)
+        $tglParameter = $request->tanggalakhir ?? Carbon::now()->toDateString();
+        $endDate = Carbon::parse($tglParameter);
+
+        // 2. Tentukan Angka Bulan (1-12) untuk 3 Bulan Terakhir
+        $m1 = $endDate->format('n');                         // Bulan ini
+        $m2 = $endDate->copy()->subMonth(1)->format('n');    // 1 bulan lalu
+        $m3 = $endDate->copy()->subMonth(2)->format('n');
+        $m4 = $endDate->copy()->subMonth(3)->format('n');
+
+
+        // 2 bulan lalu
+        $m11 = $endDate->format('M');                         // Bulan ini
+        $m22 = $endDate->copy()->subMonth(1)->format('M');    // 1 bulan lalu
+        $m33 = $endDate->copy()->subMonth(2)->format('M');    // 2 bulan lalu
+        $m44 = $endDate->copy()->subMonth(3)->format('M');    // 2 bulan lalu
+
+        // 3. Tentukan Tahun terkait masing-masing bulan
+        $y1 = $endDate->format('Y');
+        $y2 = $endDate->copy()->subMonth(1)->format('Y');
+        $y3 = $endDate->copy()->subMonth(2)->format('Y');
+        $y4 = $endDate->copy()->subMonth(3)->format('Y');
+
+        $stokKeluar = DB::connection('mysql2')->table('ti_kartu_stok as s')
+            ->join('mt_barang as b', 's.kode_barang', '=', 'b.kode_barang')
+            ->select(
+                's.kode_barang',
+                'b.satuan',
+                'b.hna',
+                'b.isi',
+                DB::raw("fc_nama_barang(s.kode_barang) as nama_barang"),
+                // Total Keluar Bulan ke-3 (Paling Lama)
+                DB::raw("SUM(CASE WHEN MONTH(s.tgl_stok) = '$m4' AND YEAR(s.tgl_stok) = '$y4' 
+                 THEN s.stok_out ELSE 0 END) as bulan_ke_3"),
+
+                // Total Keluar Bulan ke-2
+                DB::raw("SUM(CASE WHEN MONTH(s.tgl_stok) = '$m3' AND YEAR(s.tgl_stok) = '$y3' 
+                 THEN s.stok_out ELSE 0 END) as bulan_ke_2"),
+
+                // Total Keluar Bulan ke-1 (Bulan Parameter)
+                DB::raw("SUM(CASE WHEN MONTH(s.tgl_stok) = '$m2' AND YEAR(s.tgl_stok) = '$y2' 
+                 THEN s.stok_out ELSE 0 END) as bulan_ke_1"),
+                DB::raw("(SELECT sub.stok_current 
+                  FROM ti_kartu_stok sub 
+                  WHERE sub.kode_barang = s.kode_barang 
+                  AND sub.kode_unit = '4001'
+                  AND sub.tgl_stok <= '" . $endDate->toDateString() . "'
+                  ORDER BY sub.no DESC LIMIT 1) as sisa_stok_sekarang")
+            )
+            ->where('s.kode_unit', '4001') // Filter Unit
+            ->where('b.kode_tipe', $kode_tipe) // Filter Unit
+            ->whereBetween('s.tgl_stok', [
+                $endDate->copy()->subMonth(3)->startOfMonth()->toDateString(), // Awal bulan ke-3
+                $endDate->toDateString()                                      // Sampai tanggal parameter
+            ])
+            ->groupBy('s.kode_barang')
+            ->orderBy('nama_barang', 'ASC')
+            ->get();
+        return view('Laporan.tabel_r', compact([
+            'stokKeluar',
+            'm22',
+            'm33',
+            'm44',
+            'endDate'
+        ]));
+    }
     public function getLaporanAnalisisStok(Request $request)
     {
         // 1. Ambil input tanggal dari user (default ke hari ini jika kosong)
