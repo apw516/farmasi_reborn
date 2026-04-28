@@ -147,22 +147,33 @@
                     "previous": "«"
                 }
             },
-            "footerCallback": function(row, data, start, end, display) {
-                var api = this.api();
-                // Total kolom nominal (kolom ke-12)
-                var intVal = function(i) {
-                    return typeof i === 'string' ? i.replace(/[\$,.]/g, '') * 1 : typeof i ===
-                        'number' ? i : 0;
-                };
+          "footerCallback": function(row, data, start, end, display) {
+    var api = this.api();
 
-                total = api.column(12).data().reduce(function(a, b) {
-                    return intVal(a) + intVal(b);
-                }, 0);
+    // Fungsi untuk membersihkan semua karakter non-angka (kecuali minus jika ada)
+    var intVal = function(i) {
+        if (typeof i === 'string') {
+            // Menghapus 'Rp', titik ribuan, spasi, dan karakter non-digit lainnya
+            let clean = i.replace(/[^\d]/g, ''); 
+            return clean ? parseInt(clean) : 0;
+        }
+        return typeof i === 'number' ? i : 0;
+    };
 
-                $(api.column(12).footer()).html(
-                    'Rp ' + total.toLocaleString('id-ID')
-                );
-            }
+    // Menghitung total dari kolom ke-12 (index 0)
+    // Gunakan page: 'current' jika ingin total berubah saat tabel di-filter
+    let total = api
+        .column(12, { page: 'all' }) 
+        .data()
+        .reduce(function(a, b) {
+            return intVal(a) + intVal(b);
+        }, 0);
+
+    // Update footer
+    $(api.column(12).footer()).html(
+        'Rp ' + total.toLocaleString('id-ID')
+    );
+}
         });
         // Hitung ulang lebar kolom saat window di-resize (termasuk zoom)
         $(window).on('resize', function() {

@@ -24,10 +24,13 @@ Route::get('/dashboard', [dashboarController::class, 'Index'])->name('indexdashb
 Route::get('/home', [dashboarController::class, 'Index'])->middleware('guest')->name('home');
 
 
+Route::get('/indexbuatresep', [DepoFarmasiController::class, 'indexbuatresep'])->middleware('auth')->name('indexbuatresep');
 Route::get('/indexpelayananresep', [DepoFarmasiController::class, 'indexpelayananresep'])->middleware('auth')->name('indexpelayananresep');
 Route::get('/indexdatapelayanan', [DepoFarmasiController::class, 'indexdatapelayanan'])->middleware('auth')->name('indexdatapelayanan');
 Route::post('/ambildatakunjungan', [DepoFarmasiController::class, 'ambildatakunjungan'])->middleware('auth')->name('ambildatakunjungan');
+Route::post('/ambildatakunjungan_w_unit', [DepoFarmasiController::class, 'ambildatakunjungan_w_unit'])->middleware('auth')->name('ambildatakunjungan_w_unit');
 Route::post('/ambil_form_pelayanan_obat', [DepoFarmasiController::class, 'ambil_form_pelayanan_obat'])->middleware('auth')->name('ambil_form_pelayanan_obat');
+Route::post('/ambil_form_buat_resep', [DepoFarmasiController::class, 'ambil_form_buat_resep'])->middleware('auth')->name('ambil_form_buat_resep');
 Route::post('/simpanresep', [DepoFarmasiController::class, 'simpanresep_3'])->middleware('auth')->name('simpanresep');
 Route::post('/detailresep', [DepoFarmasiController::class, 'detailresep'])->middleware('auth')->name('detailresep');
 Route::get('/ambilkartustok', [DepoFarmasiController::class, 'ambilkartustok'])->middleware('auth')->name('stok.data');
@@ -114,6 +117,10 @@ Route::post('/simpanmappingbaru', [MasterController::class, 'simpanmappingbaru']
 Route::get('/cari.dpho', [MasterController::class, 'caridpho'])->name('cari.dpho');
 
 
+Route::post('/chart.fastmoving', [laporanController::class, 'getChartData'])->name('chart.fastmoving');
+Route::get('/chart.weekly', [laporanController::class, 'getChartWeekly'])->name('chart.weekly');
+Route::get('/chart.value_contribution', [laporanController::class, 'getChartValueContribution'])->name('chart.value_contribution');
+Route::get('/indexdatafastmoving', [laporanController::class, 'indexdatafastmoving'])->name('indexdatafastmoving');
 Route::get('/indexperencanaan', [laporanController::class, 'indexperencanaan'])->name('indexperencanaan');
 Route::get('/indexlaporanmasterpengadaan', [laporanController::class, 'indexlaporanmasterpengadaan'])->name('indexlaporanmasterpengadaan');
 Route::get('/indexrencanapengadaanbarang', [laporanController::class, 'indexrencanapengadaanbarang'])->name('indexrencanapengadaanbarang');

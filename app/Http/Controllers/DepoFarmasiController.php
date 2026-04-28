@@ -27,6 +27,21 @@ use Illuminate\Support\Facades\Log;
 
 class DepoFarmasiController extends Controller
 {
+    public function indexbuatresep()
+    {
+        $now = Carbon::now()->startOfMonth();
+        $end = Carbon::now()->endOfMonth();
+        $date_start = $now->format('Y-m-d');
+        $date_end = $end->format('Y-m-d');
+        $menu = 'indexbuatresep';
+        $unit = Unit::get();
+        return view('Depofarmasi.indexbuatresep', compact([
+            'menu',
+            'date_start',
+            'date_end',
+            'unit'
+        ]));
+    }
     public function indexpelayananresep()
     {
         $now = Carbon::now()->startOfMonth();
@@ -149,6 +164,23 @@ class DepoFarmasiController extends Controller
             'data'
         ]));
     }
+    public function ambildatakunjungan_w_unit(Request $request)
+    {
+        $tanggalawal = $request->tanggalawal;
+        $tanggalakhir = $request->tanggalakhir;
+        $kode_unit = $request->kode_unit;
+        $data = db::select('SELECT DATE(tgl_masuk) AS tgl_masuk,no_rm,kode_kunjungan
+        ,fc_nama_px(no_rm) AS nama_pasien 
+        ,fc_nama_unit1(kode_unit) AS nama_unit
+        ,fc_alamat(no_rm) AS alamat 
+        ,fc_nama_paramedis1(kode_paramedis) AS dokter
+        ,fc_NAMA_PENJAMIN2(kode_penjamin) AS nama_penjamin
+        ,no_sep
+        FROM ts_kunjungan WHERE DATE(tgl_masuk) BETWEEN ? AND ? AND kode_unit = ?', [$tanggalawal, $tanggalakhir,$kode_unit]);
+        return view('Depofarmasi.tabel_kunjungan_pasien_2', compact([
+            'data'
+        ]));
+    }
     public function ambildatastokdepo(Request $Request)
     {
         $keyword = $Request->input('keyword');
@@ -191,6 +223,28 @@ class DepoFarmasiController extends Controller
         return DataTables::of($query)
             ->addIndexColumn()
             ->make(true);
+    }
+    public function ambil_form_buat_resep(Request $request)
+    {
+        $kode_kunjungan = $request->kode_kunjungan;
+        $data_kunjungan = db::select('select * 
+        ,fc_nama_px(no_rm) AS nama_pasien 
+        ,fc_nama_unit1(kode_unit) AS nama_unit
+        ,kode_unit
+        ,fc_alamat(no_rm) AS alamat 
+        ,fc_nama_paramedis1(kode_paramedis) AS dokter
+        ,fc_NAMA_PENJAMIN2(kode_penjamin) AS nama_penjamin
+        from ts_kunjungan where kode_kunjungan = ?', [$kode_kunjungan]);
+        $data_obat = db::select('select * from master_barang_x_master_obat_bpjs');
+        $mt_pasien = db::select('select * from mt_pasien where no_rm = ?', [$data_kunjungan[0]->no_rm]);
+        $now = Carbon::now()->startOfMonth();
+        $date_start = $now->format('Y-m-d');
+        return view('Depofarmasi.form_buat_resep', compact([
+            'data_kunjungan',
+            'data_obat',
+            'mt_pasien',
+            'date_start'
+        ]));
     }
     public function ambil_form_pelayanan_obat(Request $request)
     {

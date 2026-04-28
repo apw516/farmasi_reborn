@@ -355,7 +355,7 @@ class GudangFarmasiController extends MasterController
             // Gunakan Eager Loading untuk efisiensi
             $data = model_stok_persediaan::with(['barang', 'mt_supplier', 'unit', 'po_header'])
                 ->select('ti_stok_pesediaan.*')
-
+                ->distinct()
                 // Filter Berdasarkan Unit (Jika parameter kode_unit ada)
                 ->when($kode_unit, function ($query, $kode_unit) {
                     return $query->where('ti_stok_pesediaan.kode_unit', $kode_unit);
@@ -367,9 +367,8 @@ class GudangFarmasiController extends MasterController
                         $q->where('kode_tipe', $kode_tipe);
                     });
                 })
-
+                ->groupBy('ti_stok_pesediaan.id')
                 ->orderBy('id', 'DESC');
-
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('nama_barang', function ($row) {
@@ -1031,7 +1030,7 @@ class GudangFarmasiController extends MasterController
                 $isi_qty = $qty * $isi_sedang;
                 // dd($qty);
                 $id_pabrik = $b['list_idpabrik'];
-                MasterBarang::where('kode_barang',$b['list_kodebarang'])->update(['id_pabrik' => $id_pabrik]);
+                MasterBarang::where('kode_barang', $b['list_kodebarang'])->update(['id_pabrik' => $id_pabrik]);
                 $hrg_satuan_kecil = $b['list_hrgasatuanasli'];
                 $data_save_detail = [
                     'kode_po' => $kode_po,

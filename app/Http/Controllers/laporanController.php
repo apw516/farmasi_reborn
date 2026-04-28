@@ -23,6 +23,23 @@ class laporanController extends Controller
             'tipe'
         ]));
     }
+    public function indexdatafastmoving()
+    {
+        $now = Carbon::now()->startOfMonth();
+        $end = Carbon::now()->endOfMonth();
+        $date_start = $now->format('Y-m-d');
+        $date_end = $end->format('Y-m-d');
+        $menu = 'indexdatafastmoving';
+        $tipe = db::select('select * from mt_tipe_barang');
+        $unit = db::select('select * from mt_unit where kode_unit > 4000 and kode_unit < 4014');
+        return view('Laporan.indexdatafastmoving', compact([
+            'menu',
+            'date_start',
+            'date_end',
+            'tipe',
+            'unit'
+        ]));
+    }
     public function indexlaporanmasterpengadaan()
     {
         $now = Carbon::now()->startOfMonth();
@@ -51,70 +68,6 @@ class laporanController extends Controller
             'tipe'
         ]));
     }
-    // public function ambildatarencanapengadaan(Request $request)
-    // {
-    //     // Ambil 3 bulan terakhir untuk label header
-    //     $months = collect(range(2, 0))->map(function ($i) {
-    //         return Carbon::now()->subMonths($i);
-    //     });
-    //     $dataPO = DB::table('tg_po_detail as a')
-    //         ->join('tg_po_header as b', 'a.kode_po', '=', 'b.kode_po')
-    //         ->select([
-    //             'a.kode_barang',
-    //             DB::raw("fc_nama_barang(a.kode_barang) AS nama_barang"),
-    //             // Pivot data berdasarkan bulan (1-12)
-    //             DB::raw("SUM(CASE WHEN MONTH(b.tgl_beli) = " . $months[0]->month . " THEN a.qty_kecil ELSE 0 END) AS bulan_1"),
-    //             DB::raw("SUM(CASE WHEN MONTH(b.tgl_beli) = " . $months[1]->month . " THEN a.qty_kecil ELSE 0 END) AS bulan_2"),
-    //             DB::raw("SUM(CASE WHEN MONTH(b.tgl_beli) = " . $months[2]->month . " THEN a.qty_kecil ELSE 0 END) AS bulan_3"),
-    //             DB::raw('SUM(a.qty_kecil) as total_po')
-    //         ])
-    //         ->where('b.tgl_beli', '>=', $months[0]->copy()->startOfMonth())
-    //         ->groupBy('a.kode_barang')
-    //         ->orderBy('total_po', 'desc')
-    //         // ->limit(10)
-    //         ->get();
-    //     return view('Laporan.tabel_rencana_pembelian', compact([
-    //         'dataPO',
-    //         'months'
-    //     ]));
-    // }
-    // public function getdatarencanapengadaan_lengkap()
-    // {
-    //     // 1. Ambil 3 bulan terakhir (Carbon)
-    //     $months = collect(range(2, 0))->map(fn($i) => Carbon::now()->subMonths($i));
-
-    //     // 2. Subquery Sisa Stok Terakhir
-    //     $subStok = DB::table('ti_kartu_stok')
-    //         ->select('kode_barang', 'stok_last')
-    //         ->whereIn('no', function ($query) {
-    //             $query->select(DB::raw('MAX(no)'))
-    //                 ->from('ti_kartu_stok')
-    //                 ->groupBy('kode_barang');
-    //         });
-
-    //     // 3. Main Query (PO + Sisa Stok)
-    //     $dataPO = DB::table('tg_po_detail as a')
-    //         ->join('tg_po_header as b', 'a.kode_po', '=', 'b.kode_po')
-    //         ->leftJoinSub($subStok, 'stok_last', function ($join) {
-    //             $join->on('a.kode_barang', '=', 'stok_last.kode_barang');
-    //         })
-    //         ->select([
-    //             'a.kode_barang',
-    //             DB::raw("fc_nama_barang(a.kode_barang) AS nama_barang"),
-    //             // Pivot Bulanan
-    //             DB::raw("SUM(CASE WHEN MONTH(b.tgl_beli) = " . $months[0]->month . " THEN a.qty_kecil ELSE 0 END) AS bulan_1"),
-    //             DB::raw("SUM(CASE WHEN MONTH(b.tgl_beli) = " . $months[1]->month . " THEN a.qty_kecil ELSE 0 END) AS bulan_2"),
-    //             DB::raw("SUM(CASE WHEN MONTH(b.tgl_beli) = " . $months[2]->month . " THEN a.qty_kecil ELSE 0 END) AS bulan_3"),
-    //             DB::raw('SUM(a.qty_kecil) as total_po'),
-    //             'stok_last.stok_last as sisa_gudang' // Kolom sisa stok
-    //         ])
-    //         ->where('b.tgl_beli', '>=', $months[0]->copy()->startOfMonth())
-    //         ->groupBy('a.kode_barang', 'stok_last.stok_last')
-    //         ->orderBy('total_po', 'desc')
-    //         ->limit(10)
-    //         ->get();
-    //     dd($dataPO);
-    // }
     public function buatrencanapengadaan(Request $request)
     {
         $kode_tipe = $request->kode_tipe;
@@ -346,5 +299,97 @@ class laporanController extends Controller
             'laporan',
             'penjualan'
         ]));
+    }
+    public function getChartData(Request $request)
+    {
+        $tglMulai = $request->tgl_mulai ?? now()->subMonths(3)->format('Y-m-d');
+        $tglSelesai = $request->tgl_selesai ?? now()->format('Y-m-d');
+        $limit = $request->limit ?? 10;
+        $unit_data = $request->unit_data;
+        $data = DB::select("
+        SELECT 
+            fc_nama_barang(kode_barang) AS label,
+            SUM(stok_out) AS total
+        FROM ti_kartu_stok
+        WHERE 
+            kode_unit = ? 
+            AND stok_out > 0
+            AND tgl_stok BETWEEN ? AND ?
+        GROUP BY kode_barang
+        ORDER BY total DESC
+        LIMIT ?
+    ", [$unit_data, $tglMulai, $tglSelesai, (int)$limit]);
+
+        return response()->json([
+            'labels' => collect($data)->pluck('label'),
+            'values' => collect($data)->pluck('total'),
+        ]);
+    }
+    public function getChartWeekly(Request $request)
+    {
+        $tglMulai = $request->tgl_mulai ?? '2026-01-01';
+        $tglSelesai = $request->tgl_selesai ?? '2026-03-31';
+        $limit = $request->limit ?? 10;
+        $unit_data = $request->unit_data;
+
+        $data = DB::select("
+        SELECT 
+            YEARWEEK(tgl_stok, 1) as periode,
+            CONCAT('Minggu ', DATE_FORMAT(tgl_stok, '%v-%Y')) AS label, 
+            SUM(stok_out) AS total
+            FROM ti_kartu_stok
+            WHERE 
+                kode_unit = ?
+                AND tgl_stok BETWEEN ? AND ?
+            GROUP BY periode, label
+            -- Urutkan berdasarkan nilai integer YEARWEEK agar kronologis
+            ORDER BY periode ASC
+            LIMIT ?
+        ", [$unit_data, $tglMulai, $tglSelesai, (int)$limit]);
+        return response()->json([
+            'labels' => collect($data)->pluck('label'),
+            'values' => collect($data)->pluck('total'),
+        ]);
+    }
+    public function getChartValueContribution(Request $request)
+    {
+        $tglMulai = $request->tgl_mulai ?? '2026-01-01';
+        $tglSelesai = $request->tgl_selesai ?? '2026-03-31';
+        $limit = $request->limit ?? 10;
+        $unit_data = $request->unit_data;
+        // Query untuk mendapatkan nilai total per barang
+        $rawData = DB::select("
+        SELECT 
+            fc_nama_barang(ti_kartu_stok.kode_barang) AS nama,
+            SUM(stok_out * b.harga_jual) AS total_nilai,
+            b.harga_jual
+        FROM ti_kartu_stok
+        INNER JOIN mt_barang b on ti_kartu_stok.kode_barang = b.kode_barang
+        WHERE 
+            kode_unit = ? 
+            AND tgl_stok BETWEEN ? AND ?
+            AND stok_out > 0
+        GROUP BY ti_kartu_stok.kode_barang
+        ORDER BY total_nilai DESC
+    ", [$unit_data,$tglMulai, $tglSelesai]);
+        $data = collect($rawData);
+
+        // Ambil Top 5
+        $top5 = $data->take($limit);
+        // Hitung sisanya sebagai "Lainnya"
+        $othersValue = $data->slice($limit)->sum('total_nilai');
+
+        $labels = $top5->pluck('nama')->toArray();
+        $values = $top5->pluck('total_nilai')->toArray();
+
+        if ($othersValue > 0) {
+            $labels[] = 'Lainnya';
+            $values[] = $othersValue;
+        }
+
+        return response()->json([
+            'labels' => $labels,
+            'values' => $values,
+        ]);
     }
 }

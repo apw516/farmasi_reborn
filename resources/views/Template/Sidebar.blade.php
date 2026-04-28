@@ -30,6 +30,13 @@
                 </li>
                 <li @IF(auth()->user()->nama == 'GUDANG FARMASI' ) hidden @endif class="nav-header">DEPO FARMASI</li>
                 <li  @IF(auth()->user()->nama == 'GUDANG FARMASI' ) hidden @endif class="nav-item">
+                    <a hidden href="{{ route('indexbuatresep') }}"
+                        class="nav-link @if ($menu == 'indexbuatresep') active @endif">
+                        <i class="nav-icon bi bi-file-bar-graph-fill"></i>
+                        <p>Buat Resep</p>
+                    </a>
+                </li>
+                <li  @IF(auth()->user()->nama == 'GUDANG FARMASI' ) hidden @endif class="nav-item">
                     <a href="{{ route('indexpelayananresep') }}"
                         class="nav-link @if ($menu == 'indexpelayananresep') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
@@ -214,6 +221,11 @@
                         class="nav-link @if ($menu == 'indexperencanaan') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
                         <p>Perencanaan Pengadaan</p>
+                    </a>
+                    <a href="{{ route('indexdatafastmoving') }}"
+                        class="nav-link @if ($menu == 'indexdatafastmoving') active @endif">
+                        <i class="nav-icon bi bi-file-bar-graph-fill"></i>
+                        <p>Data Barang Fast Moving</p>
                     </a>
                 </li>
                 {{-- <li class="nav-item">
