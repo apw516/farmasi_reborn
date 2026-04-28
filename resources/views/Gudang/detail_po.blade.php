@@ -113,7 +113,7 @@
         </tbody>
         <tfoot class="table-light fw-bold fs-7">
             @php 
-                $total = $header->total_po * $header->ppn;
+                $total = $header->total_po + $header->ppn;
                 $pajak = $total / 100;
             @endphp
             <tr>
@@ -135,7 +135,7 @@
             <tr>
                 <td colspan="2" class="text-end border-0"></td>
                 <td class="text-center text-primary fs-6 border-0"></td>
-                <td colspan="3" class="text-end border-0 fs-6">PPN ( {{ $header->ppn }} %) : </td>
+                <td colspan="3" class="text-end border-0 fs-6">PPN 11 % : </td>
                 <td colspan="2" class="text-end text-success fs-5 bg-white border border-success">
                     Rp  {{ number_format($pajak, 0, ',', '.') }} 
                 </td>

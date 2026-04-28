@@ -299,6 +299,13 @@ class GudangFarmasiController extends MasterController
 
             return DataTables::of($data)
                 ->addIndexColumn()
+                ->filter(function ($query) use ($request) {
+                    if ($request->has('search') && !empty($request->search['value'])) {
+                        $keyword = $request->search['value'];
+                        // Paksa pencarian hanya pada kolom b.nama_barang
+                        $query->where('b.nama_barang', 'like', "%{$keyword}%");
+                    }
+                })
                 ->make(true);
         }
     }
@@ -713,7 +720,6 @@ class GudangFarmasiController extends MasterController
     {
         // Pastikan request datang via AJAX
         if ($request->ajax()) {
-
             $tanggalawal = $request->tanggalawal;
             $tanggalakhir = $request->tanggalakhir;
 
@@ -894,15 +900,9 @@ class GudangFarmasiController extends MasterController
             $value3 = $nama3['value'];
             $dataSet3[$index3] = $value3;
         }
-        $kode_barang = $dataSet3['kodebarang'];
-        $nama_barang = $dataSet3['namabarangpilihan'];
-        $qty = $dataSet3['qty'] * $dataSet3['rasio_kecil'];
-        $satuan = $dataSet3['satuan'];
-        // $rasio_sedang = $dataSet3['rasio_sedang'];
-        $rasio_kecil = $dataSet3['rasio_kecil'];
-        // $satuan_sedang = $dataSet3['satuan_sedang'];
-        $satuan_kecil = $dataSet3['satuan_kecil'];
+        $qty = $dataSet3['qty'];
         $hrgasatuan = $dataSet3['hrgasatuan'];
+        $harga_disp = $hrgasatuan;
         $hrgasatuanasli = $dataSet3['hrgasatuanasli'];
         $ed = $dataSet3['ed'];
         $nobatch = $dataSet3['nobatch'];
@@ -931,13 +931,35 @@ class GudangFarmasiController extends MasterController
                 'message' => 'Nomor Batch wajib diisi ...',
                 'html'   => ''
             ]);
-        } elseif ($nobatch == '') {
+        } elseif ($id_pabrik == '') {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Nomor Batch wajib diisi ...',
                 'html'   => ''
             ]);
         } else {
+            if ($dataSet3['satuan'] == 'satuan besar') {
+                // dd($hrgasatuan);
+                $hrgasatuanasli = $dataSet3['hrgasatuanasli'] / $dataSet3['rasio_kecil'];
+                $hrgasatuan = number_format($hrgasatuanasli, 0, ',', '.');
+                $qty = $dataSet3['qty'] * $dataSet3['rasio_kecil'];
+                $mt_barang = db::select('select * from mt_barang where kode_barang = ?',[$dataSet3['kodebarang']]);
+                $satuan_terpilih = $mt_barang[0]->satuan_besar;
+            } else if ($dataSet3['satuan'] == 'satuan kecil') {
+                $hrgasatuan = $dataSet3['hrgasatuan'];
+                $hrgasatuanasli = $dataSet3['hrgasatuanasli'];
+                $qty = $dataSet3['qty'];
+                $satuan_terpilih = $dataSet3['satuan_kecil'];
+            }
+
+            $kode_barang = $dataSet3['kodebarang'];
+            $nama_barang = $dataSet3['namabarangpilihan'];
+            $satuan = $dataSet3['satuan'];
+            // $rasio_sedang = $dataSet3['rasio_sedang'];
+            $rasio_kecil = $dataSet3['rasio_kecil'];
+            // $satuan_sedang = $dataSet3['satuan_sedang'];
+            $satuan_kecil = $dataSet3['satuan_kecil'];
+
             $diskon = $dataSet3['diskon'];
             if ($diskon == '') {
                 $diskon = 0;
@@ -953,6 +975,7 @@ class GudangFarmasiController extends MasterController
                 'kode_barang' => $kode_barang,
                 'nama_barang' => $nama_barang,
                 'qty' => $qty,
+                'qty2' => $dataSet3['qty'],
                 'satuan' => $satuan,
                 'rasio_sedang' => '0',
                 'rasio_kecil' => $rasio_kecil,
@@ -962,11 +985,13 @@ class GudangFarmasiController extends MasterController
                 'hrgasatuanasli' => $hrgasatuanasli,
                 'diskon' => $diskon,
                 'nobatch' => $nobatch,
+                'satuan_terpilih' => $satuan_terpilih,
                 'ed' => $ed,
                 'nama_pabrik' => $nama_pabrik,
                 'id_pabrik' => $id_pabrik,
                 'subtotal' => $subtotal_final,
-                'subtotal_format' => $subtotal_format
+                'subtotal_format' => $subtotal_format,
+                'harga_disp' => $harga_disp,
             ];
             $html = view('Gudang.form_barang_po', compact(['dataarray', 'satuana']))->render();
             return response()->json([

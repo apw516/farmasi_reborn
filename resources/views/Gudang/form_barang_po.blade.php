@@ -19,7 +19,9 @@
         <div class="col-md-1">
             <div class="mb-3">
                 <label for="exampleFormControlInput1" class="form-label">QTY</label>
-                <input readonly type="text" class="form-control form-control-sm" id="list_qty" name="list_qty"
+                <input readonly type="text" class="form-control form-control-sm" id="list_qty2" name="list_qty2"
+                    placeholder="qty barang ..." value="{{ $dataarray['qty2'] }}">
+                <input hidden readonly type="text" class="form-control form-control-sm" id="list_qty" name="list_qty"
                     placeholder="qty barang ..." value="{{ $dataarray['qty'] }}">
             </div>
         </div>
@@ -52,8 +54,16 @@
                     placeholder="qty barang ..." value="{{ $dataarray['rasio_sedang'] }}">
             </div>
             <div class="mb-1">
-                <label for="exampleFormControlInput1" class="form-label">Satuan Kecil</label>
-                <select class="form-select form-select-sm" aria-label="Default select example" id="list_satuan_kecil"
+                <label for="exampleFormControlInput1" class="form-label">Satuan</label>
+                <select class="form-select form-select-sm" aria-label="Default select example" id="satuan_terpilih"
+                    name="satuan_terpilih">
+                    @foreach ($satuana as $s)
+                        <option value="{{ $s->kode_satuan }}" @if ($dataarray['satuan_terpilih'] == $s->kode_satuan) selected @endif>
+                            {{ $s->nama_satuan }}
+                        </option>
+                    @endforeach
+                </select>
+                <select hidden class="form-select form-select-sm" aria-label="Default select example" id="list_satuan_kecil"
                     name="list_satuan_kecil">
                     @foreach ($satuana as $s)
                         <option value="{{ $s->kode_satuan }}" @if ($dataarray['satuan_kecil'] == $s->kode_satuan) selected @endif>
@@ -72,7 +82,9 @@
             <div class="mb-3">
                 <label for="exampleFormControlInput1" class="form-label">Hrg
                     Satuan</label>
-                <input readonly type="text" class="form-control form-control-sm" id="list_hrgasatuan"
+                <input readonly type="text" class="form-control form-control-sm" id="list_hrgasatuan_display"
+                    name="list_hrgasatuan_display" placeholder="harga satuan ..." value="{{ $dataarray['harga_disp'] }}">
+                <input hidden readonly type="text" class="form-control form-control-sm" id="list_hrgasatuan"
                     name="list_hrgasatuan" placeholder="harga satuan ..." value="{{ $dataarray['hrgasatuan'] }}">
                 <input hidden type="email" class="form-control form-control-sm" id="list_hrgasatuanasli"
                     name="list_hrgasatuanasli" placeholder="harga satuan ..." value="{{ $dataarray['hrgasatuanasli']}}">

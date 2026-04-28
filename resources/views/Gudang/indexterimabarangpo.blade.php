@@ -347,7 +347,7 @@
                                                     id="kodebarang" name="kodebarang">
                                             </div>
                                         </div>
-                                        <div class="col-md-3">
+                                        <div class="col-md-2">
                                             <div class="mb-2">
                                                 <label class="form-label small fw-bold">Nama Barang</label>
                                                 <div class="input-group input-group-sm">
@@ -368,23 +368,23 @@
                                                     id="qty" name="qty" value="1" min="1">
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
+                                        <div class="col-md-8">
                                             <div class="row g-1">
-                                                <div class="col-3">
+                                                <div class="col-1">
                                                     <div class="mb-2">
-                                                        <label class="form-label small text-muted">Sat. Besar</label>
+                                                        <label class="form-label small text-muted">Satuan</label>
                                                         <select class="form-select form-select-sm" id="satuan"
                                                             name="satuan">
-                                                            <option value="0">- Pilih -</option>
-                                                            @foreach ($satuan as $s)
+                                                            {{-- <option value="0">- Pilih -</option> --}}
+                                                            {{-- @foreach ($satuan as $s)
                                                                 <option value="{{ $s->kode_satuan }}">
                                                                     {{ $s->nama_satuan }}
                                                                 </option>
-                                                            @endforeach
+                                                            @endforeach --}}
                                                         </select>
                                                     </div>
                                                 </div>
-                                                <div class="col-3">
+                                                <div hidden class="col-2">
                                                     <div class="mb-2">
                                                         <label class="form-label small text-muted">Sat. Kecil</label>
                                                         <select class="form-select form-select-sm" id="satuan_kecil"
@@ -398,7 +398,7 @@
                                                         </select>
                                                     </div>
                                                 </div>
-                                                <div class="col-3">
+                                                <div class="col-1">
                                                     <div class="mb-2">
                                                         <label class="form-label small text-danger">Isi (Rasio)</label>
                                                         <input type="number"
@@ -407,7 +407,7 @@
                                                             min="1">
                                                     </div>
                                                 </div>
-                                                <div class="col-3">
+                                                <div class="col-1">
                                                     <div class="mb-2">
                                                         <label class="form-label small text-muted">Hrg Sat.</label>
                                                         <input type="text"
@@ -419,42 +419,43 @@
                                                             class="form-label">Diskon</label>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-1">
-                                            <div class="mb-2">
-                                                <label class="form-label small fw-bold">Disc</label>
-                                                <input type="text" class="form-control form-control-sm input-mask-uang"
-                                                    id="diskon" name="diskon" value="0">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <div class="row g-1">
-                                                <div class="col-6">
+                                                <div class="col-md-1">
                                                     <div class="mb-2">
-                                                        <label class="form-label small text-muted">Batch</label>
-                                                        <input type="text" class="form-control form-control-sm"
-                                                            id="nobatch" name="nobatch" placeholder="No...">
+                                                        <label class="form-label small fw-bold">Disc</label>
+                                                        <input type="text" class="form-control form-control-sm input-mask-uang"
+                                                            id="diskon" name="diskon" value="0">
                                                     </div>
                                                 </div>
-                                                <div class="col-6">
-                                                    <div class="mb-2">
-                                                        <label class="form-label small text-muted">ED</label>
-                                                        <input type="date" class="form-control form-control-sm"
-                                                            id="ed" name="ed">
+                                                <div class="col-md-5">
+                                                    <div class="row g-1">
+                                                        <div class="col-6">
+                                                            <div class="mb-2">
+                                                                <label class="form-label small text-muted">Batch</label>
+                                                                <input type="text" class="form-control form-control-sm"
+                                                                    id="nobatch" name="nobatch" placeholder="No...">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="mb-2">
+                                                                <label class="form-label small text-muted">ED</label>
+                                                                <input type="date" class="form-control form-control-sm"
+                                                                    id="ed" name="ed">
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="mb-2">
-                                                <label class="form-label small fw-bold">Pilih Pabrikan</label>
-                                                <select class="form-select form-select-sm" name="pabrikan"
-                                                    id="pabrikan">
-                                                    @foreach ($master_pabrikan as $t)
-                                                        <option value="{{ $t->id }}">{{ $t->nama_pabrik }}</option>
-                                                    @endforeach
-                                                </select>
+                                                <div class="col-md-3">
+                                                    <div class="mb-2">
+                                                        <label class="form-label small fw-bold">Pilih Pabrikan</label>
+                                                        <select class="form-select form-select-sm" name="pabrikan"
+                                                            id="pabrikan">
+                                                            @foreach ($master_pabrikan as $t)
+                                                                <option value="{{ $t->id }}">{{ $t->nama_pabrik }}
+                                                                </option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="col-md-1 text-center">
@@ -674,9 +675,27 @@
             var satuan_barang = $(this).data('nama_satuan');
             var nama_satuan_kecil = $(this).attr('nama_satuan_kecil');
             var id_pabrik = $(this).attr('id_pabrik');
-            $('#satuan').val(satuan_barang).trigger('change');
-            $('#satuan_kecil').val(nama_satuan_kecil).trigger('change');
-            $('#satuan_kecil').val(nama_satuan_kecil).trigger('change');
+
+            var kode_satuan_besar = "satuan besar"; // Pastikan atribut ini ada di tombol
+            var nama_satuan_besar = $(this).data('nama_satuan'); // Pastikan atribut ini ada di tombol
+
+
+            var kode_satuan_kecil = "satuan kecil"; // Ambil dari atribut
+            var nama_satuan_kecil = $(this).attr('nama_satuan_kecil'); // Ambil dari atribut
+            // $('#satuan').val(satuan_barang).trigger('change');
+            // $('#satuan_kecil').val(nama_satuan_kecil).trigger('change');
+            var selectSatuan = $('#satuan');
+            selectSatuan.empty();
+            // Tambahkan pilihan Satuan Besar
+            selectSatuan.append(new Option(nama_satuan_besar, kode_satuan_besar));
+
+            // Tambahkan pilihan Satuan Kecil (jika berbeda dengan satuan besar)
+            if (kode_satuan_kecil && kode_satuan_kecil !== kode_satuan_besar) {
+                selectSatuan.append(new Option(nama_satuan_kecil, kode_satuan_kecil));
+            }
+
+            // 3. Set value dan trigger change
+            selectSatuan.val(kode_satuan_besar).trigger('change');
             $('#pabrikan').val(id_pabrik).trigger('change');
             $('#namabarangpilihan').val(nama_barang)
             $('#kodebarang').val(kode_barang)
@@ -1106,6 +1125,7 @@
                 }
             });
         }
+
         function cariobat() {
             kodesupplier = $('#supplier_id').val()
             kategori_barang = $('#kategoribarang').val()
