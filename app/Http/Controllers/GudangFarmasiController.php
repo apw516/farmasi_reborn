@@ -648,6 +648,21 @@ class GudangFarmasiController extends MasterController
             })
             ->make(true);
     }
+    public function searchunit(Request $request)
+    {
+        $term = $request->get('term');
+        $unit = Unit::where('nama_unit', 'LIKE', '%' . $term . '%')
+            ->limit(10)
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'id' => $item->kode_unit,
+                    'value' => $item->nama_unit, // Ini yang akan muncul di input
+                    'label' => $item->nama_unit // Ini yang akan muncul di daftar dropdown
+                ];
+            });
+        return response()->json($unit);
+    }
     public function searchsupplier(Request $request)
     {
         $term = $request->get('term');
@@ -1040,7 +1055,7 @@ class GudangFarmasiController extends MasterController
                 'tgl_input' => $this->get_now(),
                 'input_by' => auth()->user()->id,
                 'pph' => 0,
-                'kode_unit' => '4001',
+                'kode_unit' => $dataheader['kode_unit'],
                 'pic2' => '',
                 'materai' => $dataheader['nominalmateraiasli'],
                 'keterangan' => 'INPUT DARI APLIKASI WEB',
@@ -1074,11 +1089,11 @@ class GudangFarmasiController extends MasterController
                     'hrg_satuan_kecil' => $hrg_satuan_kecil
                 ];
                 model_tg_po_detail::create($data_save_detail);
-                $kode_unit = '4001';
+                $kode_unit = $dataheader['kode_unit'];
                 $data_sediaan = [
                     'kode_barang' => $b['list_kodebarang'],
                     'hpp' =>  $hrg_satuan_kecil,
-                    'kode_unit' => 4001,
+                    'kode_unit' => $dataheader['kode_unit'],
                     'ED' => $b['list_ed'],
                     'nomor_batch' => $b['list_nobatch'],
                     'stok_awal' => $isi,
@@ -1092,7 +1107,7 @@ class GudangFarmasiController extends MasterController
                 $data_sediaan = model_stok_persediaan::create($data_sediaan);
                 $stok_terakhir = DB::table('ti_kartu_stok as a')
                     ->where('a.kode_barang', $b['list_kodebarang'])
-                    ->where('a.kode_unit', '4001')
+                    ->where('a.kode_unit', $dataheader['kode_unit'])
                     ->orderBy('a.NO', 'desc')
                     ->first();
                 if ($stok_terakhir) {

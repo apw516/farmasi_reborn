@@ -79,6 +79,7 @@ Route::get('/indexmasterstok', [GudangFarmasiController::class, 'indexmasterstok
 Route::get('/ambildatastok', [GudangFarmasiController::class, 'ambildatastok'])->name('ambildatastok');
 Route::get('/indexterimabarangpo', [GudangFarmasiController::class, 'indexterimabarangpo'])->name('indexterimabarangpo');
 Route::get('/search-supplier', [GudangFarmasiController::class, 'searchsupplier'])->name('supplier.search');
+Route::get('/search-unit', [GudangFarmasiController::class, 'searchunit'])->name('unit.search');
 Route::post('/simpanpoheader', [GudangFarmasiController::class, 'simpanpoheader'])->name('simpanpoheader');
 Route::post('/ambildatatgpoheader', [GudangFarmasiController::class, 'ambildatatgpoheader'])->name('ambildatatgpoheader');
 Route::post('/ambilformdetailpo', [GudangFarmasiController::class, 'ambilformdetailpo'])->name('ambilformdetailpo');
@@ -98,6 +99,13 @@ Route::get('/ambilbaranguntukpo', [GudangFarmasiController::class, 'ambilbarang'
 Route::post('/batalkanpo', [GudangFarmasiController::class, 'batalkanpo'])->name('batalkanpo');
 Route::post('/pencariansediaanbarang', [GudangFarmasiController::class, 'pencariansediaanbarang'])->name('pencariansediaanbarang');
 Route::post('/mutasibarang.simpan', [GudangFarmasiController::class, 'simpanmutasibanyak'])->name('mutasibarang.simpan');
+Route::get('/barang/edit/{id}', [MasterController::class, 'ambilbarangedit'])->name('barang/edit/{id}');
+
+
+
+Route::post('/hapusobat', [MasterController::class, 'hapusobat'])->name('hapusobat');
+Route::post('/updatemasterbarang', [MasterController::class, 'updatebarang'])->name('updatemasterbarang');
+Route::post('/simpanmasterbarang', [MasterController::class, 'simpanbarang'])->name('simpanmasterbarang');
 
 
 

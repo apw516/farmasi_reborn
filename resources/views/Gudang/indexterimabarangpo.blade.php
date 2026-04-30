@@ -104,6 +104,20 @@
                                         <div class="row g-1">
                                             <div class="col-md-7">
                                                 <div class="mb-1">
+                                                    <label class="form-label small mb-0">Pilih Unit Penerima</label>
+                                                    <input type="text" class="form-control form-control-sm"
+                                                        id="unit_search" name="unit_search">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-5">
+                                                <div class="mb-1">
+                                                    <label class="form-label small mb-0">Kode Unit</label>
+                                                    <input readonly type="text" class="form-control form-control-sm"
+                                                        id="kode_unit" name="kode_unit">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-7">
+                                                <div class="mb-1">
                                                     <label class="form-label small mb-0">Pilih Supplier</label>
                                                     <input type="text" class="form-control form-control-sm"
                                                         id="supplier_search" name="supplier_search">
@@ -422,7 +436,8 @@
                                                 <div class="col-md-1">
                                                     <div class="mb-2">
                                                         <label class="form-label small fw-bold">Disc</label>
-                                                        <input type="text" class="form-control form-control-sm input-mask-uang"
+                                                        <input type="text"
+                                                            class="form-control form-control-sm input-mask-uang"
                                                             id="diskon" name="diskon" value="0">
                                                     </div>
                                                 </div>
@@ -530,7 +545,7 @@
             </div>
         </div>
     </div>
-  
+
     <script>
         $(document).ready(function() {
             $('#ppn').change(function() {
@@ -582,7 +597,16 @@
                 }
             });
         }
-        $(document).ready(function() {
+        $(document).ready(function() {           
+
+            $("#unit_search").autocomplete({
+                source: "{{ route('unit.search') }}",
+                minLength: 2, // Mulai mencari setelah 2 karakter
+                select: function(event, ui) {
+                    // Set ID supplier ke hidden input saat dipilih
+                    $("#kode_unit").val(ui.item.id);
+                }
+            });
             $("#supplier_search").autocomplete({
                 source: "{{ route('supplier.search') }}",
                 minLength: 2, // Mulai mencari setelah 2 karakter

@@ -33,11 +33,23 @@ class MasterController extends Controller
         $date_end = $end->format('Y-m-d');
         $menu = 'indexmasterbarang';
         $barang = MasterBarang::paginate(15);
+        $tipebarang = DB::table('mt_tipe_barang')->get();        // Kirim view parsial
+        $satuan = DB::table('mt_satuan')->get();        // Kirim view parsial
+        $sediaan = DB::table('mt_sediaan')->get();        // Kirim view parsial
+        $pabrikan = DB::table('mt_manufaktur')->get();        // Kirim view parsial
+        $kelompokbarang = DB::table('mt_kelompok_barang')->get();        // Kirim view parsial
+        $kelompoktarif = DB::table('mt_tarif_kelompok')->get();        // Kirim view parsial
         return view('Master.indexmasterbarang', compact([
             'menu',
             'date_start',
             'date_end',
-            'barang'
+            'barang',
+            'tipebarang',
+            'satuan',
+            'sediaan',
+            'pabrikan',
+            'kelompokbarang',
+            'kelompoktarif'
         ]));
     }
     public function indexmasterdpho()
@@ -190,11 +202,117 @@ class MasterController extends Controller
                 ->where('mt_barang.act', 1)
                 ->orderBy('mt_barang.kode_barang', 'desc');
             return DataTables::of($data)
+                ->addColumn('action', function ($row) {
+                    // Tambahkan button edit dengan data-id untuk memicu modal/form
+                    $btn = '<button class="editbarang btn btn-warning btn-sm" data-id="' . $row->kode_barang . '" data-bs-toggle="modal" data-bs-target="#modaleditbarang">
+                           <i class="bi bi-pencil-square"></i>
+                        </button>';
+
+                    // Opsional: Tombol Hapus
+                    $btn .= ' <button class="deletebarang btn btn-danger btn-sm" data-id="' . $row->kode_barang . '">
+                            <i class="bi bi-trash3"></i>
+                        </button>';
+
+                    return $btn;
+                })
                 ->filterColumn('kodeobat', function ($query, $keyword) {
                     // Gunakan tabel apt_online_ref_dpho, bukan mt_barang
                     $query->where('apt_online_ref_dpho.kodeobat', 'LIKE', "%$keyword%");
                 })
                 ->make(true);
+        }
+    }
+    public function hapusobat(Request $request)
+    {
+        try {
+            $barang = MasterBarang::where('kode_barang', $request->id)->delete();
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Data barang berhasil dihapus ...'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+    public function ambilbarangedit($id)
+    {
+        $barang = MasterBarang::where('kode_barang', $id)->first();
+        $tipebarang = DB::table('mt_tipe_barang')->get();        // Kirim view parsial
+        $satuan = DB::table('mt_satuan')->get();        // Kirim view parsial
+        $sediaan = DB::table('mt_sediaan')->get();        // Kirim view parsial
+        $pabrikan = DB::table('mt_manufaktur')->get();        // Kirim view parsial
+        return view('Master.form_edit', compact('barang', 'tipebarang', 'satuan', 'sediaan', 'pabrikan'));
+    }
+    public function simpanbarang(Request $request)
+    {
+        try {
+            $databarang = [
+                'kode_barang' => $this->Get_kode_barang(),
+                'kode_tipe' => $request->kode_tipe_barang,
+                'klp_barang' => 'OBAT',
+                'nama_generik' => $request->nama_generik,
+                'nama_barang' => $request->nama_barang,
+                'satuan_besar' => $request->satuan_besar,
+                'satuan' => $request->satuan,
+                'isi' => $request->isi,
+                'act' => 1,
+                'sediaan' => $request->sediaan,
+                'id_pabrik' => $request->id_pabrik,
+                'dosis' => $request->dosis,
+                'kelompok_tarif_id' => $request->kelompok_tarif,
+                'harga_beli' => $request->harga_beli,
+                'harga_jual' => $request->harga_jual_baru,
+                'hna' => $request->hna,
+                'aturan_pakai' => $request->aturan_pakai
+            ];
+            MasterBarang::create($databarang);
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Data barang berhasil disimpan ...'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+    public function updatebarang(Request $request)
+    {
+        // Validasi data
+        $request->validate([
+            'kode_barang' => 'required',
+            'nama_barang' => 'required',
+        ]);
+
+        try {
+            // Update menggunakan Query Builder (sesuai gaya query Anda sebelumnya)
+            DB::table('mt_barang')
+                ->where('kode_barang', $request->kode_barang)
+                ->update([
+                    'kode_tipe'    => $request->kode_tipe_barang,
+                    'nama_barang'  => $request->nama_barang,
+                    'harga_jual'  => $request->harga_jual,
+                    'satuan_besar' => $request->satuan_besar,
+                    'satuan'       => $request->satuan,
+                    'isi'          => $request->isi,
+                    'sediaan'      => $request->sediaan,
+                    'id_pabrik'    => $request->id_pabrik,
+                    'dosis'        => $request->dosis,
+                ]);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Data barang berhasil diupdate'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ], 500);
         }
     }
     public function ambilbarangbelummapping(Request $request)
@@ -335,6 +453,23 @@ class MasterController extends Controller
         $date = $dt->toDateString();
         $now = $date;
         return $now;
+    }
+    public function get_kode_barang()
+    {
+        $q = DB::select('SELECT id,kode_barang,RIGHT(kode_barang,6) AS kd_max  FROM mt_barang
+        ORDER BY id DESC
+        LIMIT 1');
+        $kd = "";
+        if (count($q) > 0) {
+            foreach ($q as $k) {
+                $tmp = ((int) $k->kd_max) + 1;
+                $kd = sprintf("%06s", $tmp);
+            }
+        } else {
+            $kd = "000001";
+        }
+        date_default_timezone_set('Asia/Jakarta');
+        return 'B' . $kd;
     }
     public function caridpho(Request $request)
     {
