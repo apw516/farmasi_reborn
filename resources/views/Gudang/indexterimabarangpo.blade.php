@@ -597,7 +597,7 @@
                 }
             });
         }
-        $(document).ready(function() {           
+        $(document).ready(function() {
 
             $("#unit_search").autocomplete({
                 source: "{{ route('unit.search') }}",
@@ -937,44 +937,23 @@
             container.find('input[type=checkbox], input[type=radio]').prop('checked', false);
             location.reload()
         }
+     
+
+
         $(document).ready(function() {
             // --- 1. Konfigurasi DataTable Server-side KynovaPharma ---
             var table = $('#tbHeaderPO').DataTable({
-                processing: true, // Menampilkan spinner loader bawaan
-                serverSide: true, // Mengaktifkan mode Server-side
-                responsive: true, // Responsif di layar HP/Tablet
-                autoWidth: false,
-                pageLength: 25, // Default jumlah baris per halaman
-                order: [
-                    [2, 'desc']
-                ], // Urutan default berdasarkan No. PO (Kolom 2) secara Descending
-
-                // Konfigurasi request AJAX Serverside
+                processing: true,
+                serverSide: true,
                 ajax: {
-                    url: "{{ route('po_header.data') }}", // Route JSON Server-side di Controller
-                    type: 'POST',
+                    url: "{{ route('po_header.data') }}",
                     data: function(d) {
-                        // Kirim parameter filter tanggal ke Controller
-                        d._token = "{{ csrf_token() }}";
+                        // Kirim data tambahan ke server
                         d.tanggalawal = $('#tanggalawal').val();
                         d.tanggalakhir = $('#tanggalakhir').val();
-                    },
-                    beforeSend: function() {
-                        $('#wrapperDataTable').hide(); // Sembunyikan tabel dulu
-                        $('#loaderDataTable').show(); // Tampilkan loader custom
-                    },
-                    complete: function() {
-                        $('#loaderDataTable').hide(); // Sembunyikan loader
-                        $('#wrapperDataTable').show(); // Tampilkan tabel kembali
-                    },
-                    error: function(xhr, error, thrown) {
-                        $('#loaderDataTable').hide();
-                        Swal.fire('Error DataTable', 'Gagal mengambil data PO Header. ' + thrown,
-                            'error');
+                        d.keterangan = $('#keterangan').val();
                     }
                 },
-
-                // Definisi Kolom sesuai Response JSON dari Controller (Yajra)
                 columns: [{
                         data: 'DT_RowIndex',
                         name: 'DT_RowIndex',
@@ -1031,23 +1010,14 @@
                         className: 'text-center bg-light'
                     }
                 ],
-
-                // Konfigurasi Bahasa/UI DataTables
-                language: {
-                    processing: '<div class="spinner-border text-primary" role="status"></div>',
-                    lengthMenu: "Tampilkan _MENU_ data per halaman",
-                    zeroRecords: "Tidak ada data PO Header yang ditemukan pada periode ini.",
-                    info: "Menampilkan halaman _PAGE_ dari _PAGES_",
-                    infoEmpty: "Tidak ada data tersedia",
-                    infoFiltered: "(disaring dari _MAX_ total data)",
-                    search: "Cari berdasarkan No. PO/Supplier/User:",
-                    paginate: {
-                        first: "Awal",
-                        last: "Akhir",
-                        next: "Lanjut",
-                        previous: "Mundur"
-                    }
-                }
+                // Mengatur layout DataTables (Search & Length) agar lebih rapi
+                dom: "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
+                    "<'row'<'col-sm-12'tr>>" +
+                    "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+            });
+            // Trigger reload tabel saat tombol filter diklik
+            $('#btn-filter').on('click', function() {
+                table.draw();
             });
 
             // --- 2. Logic Tombol Proses Filter Tanggal ---
@@ -1055,6 +1025,7 @@
                 // Cek validasi tanggal
                 let tglAwal = $('#tanggalawal').val();
                 let tglAkhir = $('#tanggalakhir').val();
+                let keterangan = $('#keterangan').val();
 
                 if (!tglAwal || !tglAkhir) {
                     Swal.fire('Filter Gagal',

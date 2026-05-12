@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\bon_detail_ruangan;
+use App\Models\tg_retur_header_supplier;
 use App\Models\MasterBarang;
 use App\Models\MasterBarangBPJS;
 use App\Models\model_master_barang_x_master_bpjs;
 use App\Models\model_master_supplier;
+use App\Models\model_mutasi_ruangan;
 use App\Models\model_stok_persediaan;
 use App\Models\model_tg_po_detail;
 use App\Models\model_tg_po_header;
@@ -97,6 +100,48 @@ class GudangFarmasiController extends MasterController
                 'message' => $e->getMessage()
             ], 500);
         }
+    }
+    public function indexbonruangan()
+    {
+        $now = Carbon::now()->startOfMonth();
+        $end = Carbon::now()->endOfMonth();
+        $date_start = $now->format('Y-m-d');
+        $date_end = $end->format('Y-m-d');
+        $menu = 'indexbonruangan';
+        $tipe = DB::table('mt_tipe_barang')->get();
+        $satuan = DB::table('mt_satuan')->get();
+        $today = $this->get_date();
+        $mt_unit = Unit::get();
+        return view('Gudang.indexmutasibarang', compact([
+            'menu',
+            'date_start',
+            'date_end',
+            'tipe',
+            'today',
+            'satuan',
+            'mt_unit'
+        ]));
+    }
+    public function indexretursupplier()
+    {
+        $now = Carbon::now()->startOfMonth();
+        $end = Carbon::now()->endOfMonth();
+        $date_start = $now->format('Y-m-d');
+        $date_end = $end->format('Y-m-d');
+        $menu = 'indexretursupplier';
+        $tipe = DB::table('mt_tipe_barang')->get();
+        $satuan = DB::table('mt_satuan')->get();
+        $today = $this->get_date();
+        $mt_unit = Unit::where('kode_unit', '>', '4000')->where('kode_unit', '<', '5000')->get();
+        return view('Gudang.indexretursupplier', compact([
+            'menu',
+            'date_start',
+            'date_end',
+            'tipe',
+            'today',
+            'satuan',
+            'mt_unit'
+        ]));
     }
     public function indexmutasibarang()
     {
@@ -684,52 +729,127 @@ class GudangFarmasiController extends MasterController
     {
         $tanggalawal = $request->tanggalawal;
         $tanggalakhir = $request->tanggalakhir;
+        $keterangan = $request->keterangan;
+        if ($keterangan == 2) {
+            $query = DB::table('ti_mutasi_header')
+                ->select([
+                    'ti_mutasi_header.*',
+                    'ti_mutasi_header.kode_mutasi_header as kode_header',
+                    'ti_mutasi_header.tgl_mutasi as tgl_header',
+                    DB::raw('fc_nama_unit1(unit_asal) as unit_asal_barang'),
+                    DB::raw('fc_nama_unit1(unit_tujuan) as unit_tujuan_barang'),
+                    // Subquery detail barang dengan format lengkap
+                    DB::raw("(SELECT GROUP_CONCAT(
+                        CONCAT(b.nama_barang, ' ( qty : ', d.qty, ' ', d.satuan, ') - Exp: ', DATE_FORMAT(d.ed_obat, '%d/%m/%y'))
+                        SEPARATOR '<br>') 
+                      FROM ti_mutasi_detail d 
+                      JOIN mt_barang b ON d.kode_barang = b.kode_barang 
+                      WHERE d.kode_mutasi_header = ti_mutasi_header.kode_mutasi_header
+                     ) as detail_barang_lengkap")
+                ]);
 
-        $query = DB::table('ti_mutasi_header')
-            ->select([
-                'ti_mutasi_header.*',
-                DB::raw('fc_nama_unit1(unit_asal) as unit_asal_barang'),
-                DB::raw('fc_nama_unit1(unit_tujuan) as unit_tujuan_barang'),
-                // Subquery detail barang dengan format lengkap
-                DB::raw("(SELECT GROUP_CONCAT(
-                    CONCAT(b.nama_barang, ' ( qty : ', d.qty, ' ', d.satuan, ') - Exp: ', DATE_FORMAT(d.ed_obat, '%d/%m/%y'))
-                    SEPARATOR '<br>') 
-                  FROM ti_mutasi_detail d 
-                  JOIN mt_barang b ON d.kode_barang = b.kode_barang 
-                  WHERE d.kode_mutasi_header = ti_mutasi_header.kode_mutasi_header
-                 ) as detail_barang_lengkap")
-            ]);
-
-        if (!empty($tanggalawal) && !empty($tanggalakhir)) {
-            $query->whereBetween('tgl_mutasi', [
-                $tanggalawal . ' 00:00:00',
-                $tanggalakhir . ' 23:59:59'
-            ]);
+            if (!empty($tanggalawal) && !empty($tanggalakhir)) {
+                $query->whereBetween('tgl_mutasi', [
+                    $tanggalawal . ' 00:00:00',
+                    $tanggalakhir . ' 23:59:59'
+                ]);
+            }
+            $query->orderBy('ti_mutasi_header.id', 'DESC');
+            return DataTables::of($query)
+                ->addIndexColumn()
+                ->filterColumn('kode_header', function ($query, $keyword) {
+                    $query->where('ti_mutasi_header.kode_mutasi_header', 'like', "%{$keyword}%");
+                })
+                ->filterColumn('unit_tujuan_barang', function ($query, $keyword) {
+                    $sql = "fc_nama_unit1(unit_asal) like ?";
+                    $query->whereRaw($sql, ["%{$keyword}%"]);
+                })
+                ->filterColumn('unit_asal_barang', function ($query, $keyword) {
+                    $sql = "fc_nama_unit1(unit_tujuan) like ?";
+                    $query->whereRaw($sql, ["%{$keyword}%"]);
+                })
+                ->editColumn('tgl_header', function ($row) {
+                    return $row->tgl_header ? date('d-m-Y', strtotime($row->tgl_header)) : '-';
+                })
+                // Mengisi keterangan dengan detail barang yang sudah diformat
+                ->editColumn('keterangan', function ($row) {
+                    if ($row->detail_barang_lengkap) {
+                        return '<small>' . $row->detail_barang_lengkap . '</small>';
+                    }
+                    return $row->keterangan;
+                })
+                ->addColumn('aksi', function ($row) {
+                    return '
+                <div class="text-center">
+                    <button type="button" class="btn btn-sm btn-info" 
+                            onclick="viewDetailMutasi(\'' . $row->kode_mutasi_header . '\')">
+                        <i class="bi bi-eye"></i></button>
+                </div>';
+                })
+                // Tambahkan 'keterangan' ke rawColumns agar tag <br> dan <small> berfungsi
+                ->rawColumns(['aksi', 'keterangan'])
+                ->make(true);
+        } else {
+            $query = DB::table('ti_bon_header')
+                ->select([
+                    'ti_bon_header.*',
+                    'ti_bon_header.kode_bon_header as kode_header',
+                    'ti_bon_header.tgl_bon as tgl_header',
+                    DB::raw('fc_nama_unit1(unit_asal) as unit_asal_barang'),
+                    DB::raw('fc_nama_unit1(unit_tujuan) as unit_tujuan_barang'),
+                    // Subquery detail barang dengan format lengkap
+                    DB::raw("(SELECT GROUP_CONCAT(
+                        CONCAT(b.nama_barang, ' ( qty : ', d.qty, ' ', d.satuan, ') - Exp: ', DATE_FORMAT(d.ed_obat, '%d/%m/%y'))
+                        SEPARATOR '<br>') 
+                      FROM ti_bon_detail d 
+                      JOIN mt_barang b ON d.kode_barang = b.kode_barang 
+                      WHERE d.kode_bon_header = ti_bon_header.kode_bon_header
+                     ) as detail_barang_lengkap")
+                ]);
+            if (!empty($tanggalawal) && !empty($tanggalakhir)) {
+                $query->whereBetween('tgl_bon', [
+                    $tanggalawal . ' 00:00:00',
+                    $tanggalakhir . ' 23:59:59'
+                ]);
+            }
+            $query->orderBy('ti_bon_header.id', 'DESC');
+            return DataTables::of($query)
+                ->addIndexColumn()
+                // Beritahu Yajra bahwa pencarian 'kode_header' harusnya ke 'kode_bon_header'
+                ->filterColumn('kode_header', function ($query, $keyword) {
+                    $query->where('ti_bon_header.kode_bon_header', 'like', "%{$keyword}%");
+                })
+                // Jika unit_asal_barang adalah fungsi fc_nama_unit1, filter manual seperti ini:
+                ->filterColumn('unit_tujuan_barang', function ($query, $keyword) {
+                    $sql = "fc_nama_unit1(unit_asal) like ?";
+                    $query->whereRaw($sql, ["%{$keyword}%"]);
+                })
+                ->filterColumn('unit_asal_barang', function ($query, $keyword) {
+                    $sql = "fc_nama_unit1(unit_tujuan) like ?";
+                    $query->whereRaw($sql, ["%{$keyword}%"]);
+                })
+                ->editColumn('tgl_header', function ($row) {
+                    return $row->tgl_header ? date('d-m-Y', strtotime($row->tgl_header)) : '-';
+                })
+                // Mengisi keterangan dengan detail barang yang sudah diformat
+                ->editColumn('keterangan', function ($row) {
+                    if ($row->detail_barang_lengkap) {
+                        return '<small>' . $row->detail_barang_lengkap . '</small>';
+                    }
+                    return $row->keterangan;
+                })
+                ->addColumn('aksi', function ($row) {
+                    return '
+                <div class="text-center">
+                    <button type="button" class="btn btn-sm btn-info" 
+                            onclick="viewDetailMutasi(\'' . $row->kode_bon_header . '\')">
+                        <i class="bi bi-eye"></i></button>
+                </div>';
+                })
+                // Tambahkan 'keterangan' ke rawColumns agar tag <br> dan <small> berfungsi
+                ->rawColumns(['aksi', 'keterangan'])
+                ->make(true);
         }
-        $query->orderBy('ti_mutasi_header.id', 'DESC');
-        return DataTables::of($query)
-            ->addIndexColumn()
-            ->editColumn('tgl_mutasi', function ($row) {
-                return $row->tgl_mutasi ? date('d-m-Y', strtotime($row->tgl_mutasi)) : '-';
-            })
-            // Mengisi keterangan dengan detail barang yang sudah diformat
-            ->editColumn('keterangan', function ($row) {
-                if ($row->detail_barang_lengkap) {
-                    return '<small>' . $row->detail_barang_lengkap . '</small>';
-                }
-                return $row->keterangan;
-            })
-            ->addColumn('aksi', function ($row) {
-                return '
-            <div class="text-center">
-                <button type="button" class="btn btn-sm btn-info" 
-                        onclick="viewDetailMutasi(\'' . $row->kode_mutasi_header . '\')">
-                    <i class="bi bi-eye"></i></button>
-            </div>';
-            })
-            // Tambahkan 'keterangan' ke rawColumns agar tag <br> dan <small> berfungsi
-            ->rawColumns(['aksi', 'keterangan'])
-            ->make(true);
     }
     public function ambildatatgpoheader(Request $request)
     {
@@ -795,6 +915,239 @@ class GudangFarmasiController extends MasterController
                 // WAJIB mendaftarkan kolom yang berisi HTML agar tidak dianggap string biasa oleh DataTables
                 ->rawColumns(['tgl_input', 'nama_supplier', 'gtotal_po', 'aksi'])
                 // Terakhir, buat respon JSON
+                ->make(true);
+        }
+
+        // Jika request bukan AJAX, tolak atau arahkan kembali
+        abort(404);
+    }
+    public function datapoheaderretur(Request $request)
+    {
+        // Pastikan request datang via AJAX
+        if ($request->ajax()) {
+            $tanggalawal = $request->tanggalawal;
+            $tanggalakhir = $request->tanggalakhir;
+            // 1. Definisikan Query Utama menggunakan Query Builder (Paling Cepat)
+            $query = DB::table('tg_po_header')
+                ->select([
+                    '*',
+                    // Panggil Function MySQL fc_NAMA_SUPPLIER langsung di query
+                    DB::raw('fc_NAMA_SUPPLIER(kode_supplier) as nama_supplier')
+                ]);
+
+            // 2. Terapkan Filter Tanggal 'between'
+            // Gunakan conditional where agar query fleksibel
+            if (!empty($tanggalawal) && !empty($tanggalakhir)) {
+                $query->whereBetween('tgl_input', [$tanggalawal, $tanggalakhir]);
+            }
+
+            // 3. Masukkan Query ke Engine DataTables Yajra
+            return DataTables::of($query)
+                ->addIndexColumn() // Menambahkan kolom 'DT_RowIndex' untuk penomoran
+                // --- OPTIMASI VISUAL DI SERVER-SIDE (Opsional tapi disarankan) ---
+                // Format Tanggal Input
+                // 1. Perbaikan Filter untuk Nama Supplier (Fungsi MySQL)
+                ->filterColumn('nama_supplier', function ($query, $keyword) {
+                    $sql = "fc_NAMA_SUPPLIER(kode_supplier) LIKE ?";
+                    $query->whereRaw($sql, ["%{$keyword}%"]);
+                })
+                // 2. Tambahkan Filter Manual untuk no_faktur & kode_po (PENTING jika menggunakan alias)
+                ->filterColumn('no_faktur', function ($query, $keyword) {
+                    $query->where('no_faktur', 'like', "%{$keyword}%");
+                })
+                ->filterColumn('kode_po', function ($query, $keyword) {
+                    $query->where('kode_po', 'like', "%{$keyword}%");
+                })
+                ->editColumn('tgl_input', function ($row) {
+                    // Contoh: 10 Apr 2026 (WIB)
+                    return Carbon::parse($row->tgl_input)->format('d M Y') . ' <small class="text-muted">(' . Carbon::parse($row->tgl_input)->format('H:i') . ' WIB)</small>';
+                })
+                // Format Nama Supplier (Beri highlight)
+                ->editColumn('nama_supplier', function ($row) {
+                    return '<strong>' . $row->nama_supplier . '</strong><br><small class="text-muted">' . $row->kode_supplier . '</small>';
+                })
+                // Format Grand Total (Mata Uang)
+                ->editColumn('gtotal_po', function ($row) {
+                    // Sesuaikan nama field 'grand_total' dengan field asli di tabel Anda
+                    return '<div class="text-end fw-bold text-success">Rp ' . number_format($row->gtotal_po, 0, ',', '.') . '</div>';
+                })
+                // Menambahkan Kolom Aksi (Tombol Detail, Edit, Hapus)
+                ->addColumn('aksi', function ($row) {
+                    $disabled = ($row->status_po == 'CCL') ? 'disabled' : '';
+                    return '
+                    <div class="btn-group btn-group-sm">
+                        <button type="button" class="btn btn-outline-primary" title="Detail PO"
+                            onclick="pilihpoheader(\'' . $row->kode_po . '\')">
+                            <i class="bi bi-arrow-down"></i>
+                        </button>                      
+                    </div>';
+                })
+                // WAJIB mendaftarkan kolom yang berisi HTML agar tidak dianggap string biasa oleh DataTables
+                ->rawColumns(['tgl_input', 'nama_supplier', 'gtotal_po', 'aksi'])
+                // Terakhir, buat respon JSON
+                ->make(true);
+        }
+        // Jika request bukan AJAX, tolak atau arahkan kembali
+        abort(404);
+    }
+    public function datadetailporetur(Request $request)
+    {
+        if ($request->ajax()) {
+            // Ambil ID dari request Ajax
+            $id = $request->id;
+
+            $query = DB::table('tg_po_detail as detail')
+                ->select([
+                    'detail.*',
+                    // Pastikan nama kolom di dalam fungsi sesuai (misal: detail.kode_barang)
+                    DB::raw('FC_NAMA_BARANG(detail.kode_barang) as nama_barang')
+                ])
+                // Filter berdasarkan ID Header yang dikirim dari JS
+                ->where('detail.kode_po', $id);
+
+            return DataTables::of($query)
+                ->addIndexColumn() // Membuat kolom DT_RowIndex
+                ->editColumn('qty', function ($row) {
+                    // Contoh memformat angka qty jika diperlukan
+                    return number_format($row->qty, 0, ',', '.');
+                })
+                ->addColumn('aksi', function ($row) {
+                    // Menambahkan tombol aksi jika diperlukan
+                    return '<button class="btn btn-sm btn-success btn-pilih" data-id_detail="' . $row->id . '" data-nomor_po="' . $row->kode_po . '" data-batch="' . $row->batch . '" data-id="' . $row->kode_barang . '" data-ed="' . $row->ed . '">Pilih</button>';
+                })
+                ->rawColumns(['aksi']) // Beritahu Yajra bahwa 'aksi' mengandung HTML
+                ->make(true);
+        }
+    }
+    public function formretursupplier(Request $request)
+    {
+        $kode_barang = $request->kode_barang;
+        $kode_po = $request->kode_po;
+        $batch = $request->batch;
+        $ed = $request->ed;
+        $id_detail = $request->id_detail;
+        $ed = Carbon::parse($ed)->format('Y-m-d');
+        // Cari stok terakhir di tabel sediaan
+        $po_header = DB::table('tg_po_header')
+            ->where('kode_po', $kode_po)
+            ->first();
+        $nomor_faktur = $po_header->no_faktur;
+        $sediaan = DB::table('ti_stok_pesediaan')
+            ->where('kode_barang', $kode_barang)
+            ->where('nomor_batch', $batch)
+            ->where('nomor_faktur', $nomor_faktur)
+            ->where('kode_unit', 4001)
+            ->sum('stok_sekarang'); // Mengembalikan nilai integer/float
+        $nama_barang = DB::selectOne("SELECT FC_NAMA_BARANG(?) as nama", [$kode_barang])->nama;
+        return view('Gudang.form_retur_supplier', compact([
+            'nama_barang',
+            'kode_barang',
+            'kode_po',
+            'nomor_faktur',
+            'batch',
+            'sediaan',
+            'ed',
+            'id_detail'
+        ]))->render();
+    }
+    public function simpanretursupplier(Request $request)
+    {
+        try {
+            DB::transaction(function () use ($request) {
+                // 1. Generate Kode Retur Otomatis
+                $kode_retur = $this->kode_retur_po();
+                // 2. Simpan ke Header
+                $datah = [
+                    'kode_retur_po' => $kode_retur,
+                    'kode_po' => $request->kode_po,
+                    'tgl_retur' => $request->tgl_retur,
+                    'total_retur' => 0,
+                    'alasan_retur' => $request->alasan_retur,
+                    'pic' => auth()->user()->id
+                ];
+                $DATAHEADER = tg_retur_header_supplier::create($datah);
+                // dd('ok');
+                // 3. Loop Simpan Detail
+                foreach ($request->items as $item) {
+                    $id_detail = $item['id_detail'];
+                    $po_detail = model_tg_po_detail::where('id',$id_detail)->first();
+                    // dd($po_detail->);
+                    DB::table('tg_retur_po_detail')->insert([
+                        'kode_retur_po_detail' => $kode_retur,
+                        'tgl_retur_po_detail' => $kode_retur,
+                        'kode_retur_po' => $kode_retur,
+                        'kode_barang' => $item['kode_barang'],
+                        'id_po_detail' => $id_detail,
+                        'qty_Awal' => $item['kode_barang'],
+                        'qty_retur' => $item['kode_barang'],
+                        'qty_sisa' => $item['kode_barang'],
+                        'hrg_satuan' => $item['kode_barang'],
+                        'total_retur_po_detail' => $item['kode_barang'],
+                        'status_retur_po_detail' => $item['kode_barang'],
+                        'satuan' => $item['kode_barang']
+                    ]);
+
+                    // 4. (Opsional) Kurangi Stok di ti_stok_pesediaan
+                    // DB::table('ti_stok_pesediaan')
+                    //     ->where('kode_barang', $item['kode_barang'])
+                    //     ->where('nomor_batch', $item['batch'])
+                    //     ->decrement('stok_sekarang', $item['qty_retur']);
+                }
+            });
+
+            return response()->json(['message' => 'Sukses']);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Error: ' . $e->getMessage()], 500);
+        }
+    }
+    public function dataretursupplier(Request $request)
+    {
+        if ($request->ajax()) {
+            $tanggalawal = $request->tanggalawal;
+            $tanggalakhir = $request->tanggalakhir;
+            $query = DB::table('tg_retur_po_header as retur')
+                ->select([
+                    'retur.kode_retur_po',
+                    'retur.id as idretur',
+                    'retur.tgl_retur',
+                    'retur.alasan_retur',
+                    'retur.kode_po',
+                    'po.tgl_input',
+                    'retur.total_retur',
+                    'po.no_faktur',
+                    'po.gtotal_po as total_po',
+                    DB::raw('fc_NAMA_SUPPLIER(po.kode_supplier) as nama_supplier')
+                ])
+                ->leftJoin('tg_po_header as po', 'retur.kode_po', '=', 'po.kode_po');
+            if (!empty($tanggalawal) && !empty($tanggalakhir)) {
+                $query->whereBetween('retur.tgl_retur', [$tanggalawal, $tanggalakhir]);
+            }
+            return DataTables::of($query)
+                ->addIndexColumn()
+                // 1. Format Total Retur menjadi Rupiah
+                ->editColumn('total_retur', function ($row) {
+                    return 'Rp ' . number_format($row->total_retur, 0, ',', '.');
+                })
+                // 2. Tambahkan tombol Batal dan Detail (dengan ID untuk Modal)
+                ->addColumn('action', function ($row) {
+                    $btn = '<button type="button" class="btn btn-sm btn-info btn-detail" data-id="' . $row->idretur . '" title="Detail">
+                        <i class="fa fa-eye"></i> Detail
+                    </button> ';
+                    $btn .= '<button type="button" class="btn btn-sm btn-danger btn-batal" data-id="' . $row->idretur . '" title="Batal Retur">
+                        <i class="fa fa-times"></i> Batal
+                     </button>';
+                    return $btn;
+                })
+                ->filter(function ($instance) use ($request) {
+                    if ($request->has('search') && !empty($request->search['value'])) {
+                        $keyword = $request->search['value'];
+                        $instance->where(function ($q) use ($keyword) {
+                            $q->where('retur.tgl_retur', 'like', "%$keyword%")
+                                ->orWhere(DB::raw('fc_NAMA_SUPPLIER(po.kode_supplier)'), 'like', "%$keyword%");
+                        });
+                    }
+                })
+                ->rawColumns(['action'])
                 ->make(true);
         }
 
@@ -958,7 +1311,7 @@ class GudangFarmasiController extends MasterController
                 $hrgasatuanasli = $dataSet3['hrgasatuanasli'] / $dataSet3['rasio_kecil'];
                 $hrgasatuan = number_format($hrgasatuanasli, 0, ',', '.');
                 $qty = $dataSet3['qty'] * $dataSet3['rasio_kecil'];
-                $mt_barang = db::select('select * from mt_barang where kode_barang = ?',[$dataSet3['kodebarang']]);
+                $mt_barang = db::select('select * from mt_barang where kode_barang = ?', [$dataSet3['kodebarang']]);
                 $satuan_terpilih = $mt_barang[0]->satuan_besar;
             } else if ($dataSet3['satuan'] == 'satuan kecil') {
                 $hrgasatuan = $dataSet3['hrgasatuan'];
@@ -1302,6 +1655,7 @@ class GudangFarmasiController extends MasterController
     public function pencariansediaanbarang(Request $request)
     {
         $kode_unit = $request->unit_asal;
+        $tipebarang = $request->tipebarang;
         if (strlen($kode_unit) == 0) {
             return response()->json([
                 'code' => 'error',
@@ -1324,6 +1678,7 @@ class GudangFarmasiController extends MasterController
                     'c.nama_tipe'
                 ])
                 ->where('a.kode_unit', $kode_unit)
+                ->where('b.kode_tipe', $tipebarang)
                 ->where('a.stok_sekarang', '>', 0)
                 ->get();
             return view('Gudang.tabel_stok_sediaan_unit', compact([
@@ -1331,152 +1686,244 @@ class GudangFarmasiController extends MasterController
             ]));
         }
     }
+    public function GET_KODE_BON_RUANGAN()
+    {
+        $q = DB::select('SELECT id,kode_bon_header,RIGHT(kode_bon_header,3) AS kd_max  FROM ti_bon_header
+        WHERE DATE(tgl_bon) = CURDATE()
+        ORDER BY id DESC
+        LIMIT 1');
+        $kd = "";
+        if (count($q) > 0) {
+            foreach ($q as $k) {
+                $tmp = ((int) $k->kd_max) + 1;
+                $kd = sprintf("%03s", $tmp);
+            }
+        } else {
+            $kd = "001";
+        }
+        date_default_timezone_set('Asia/Jakarta');
+        return 'BON' . date('ymd') . $kd;
+    }
     public function simpanmutasibanyak(Request $request)
     {
         DB::beginTransaction();
         try {
-            $KODE_mutasi = $this->GET_KODE_MUTASI();
+            $jenismutasi = $request->keteranganmutasi;
             $unit_1 = Unit::where('kode_unit', $request->unit_asal)->get()->first();
             $unit_2 = Unit::where('kode_unit', $request->unit_tujuan)->get()->first();
-            $keterangan = 'Mutasi dari ' . $unit_1->nama_unit . ' Ke ' . $unit_2->nama_unit;
-            $data_mutasi_header = [
-                'kode_mutasi_header' => $KODE_mutasi,
-                'tgl_mutasi' => $this->get_now(),
-                'unit_asal' => $request->unit_asal,
-                'unit_tujuan' => $request->unit_tujuan,
-                'pic' => auth()->user()->id,
-                'kode_request' => '',
-                'kode_tipe' => '2',
-                'pemberi' => '',
-                'penerima' => '',
-                'keterangan' => $keterangan,
-            ];
-            mutasiheader::create($data_mutasi_header);
+            if ($jenismutasi == 1) {
+                //mutasistok
+                $KODE_mutasi = $this->GET_KODE_MUTASI();
+                $keterangan = 'Mutasi dari ' . $unit_1->nama_unit . ' Ke ' . $unit_2->nama_unit;
+                $data_mutasi_header = [
+                    'kode_mutasi_header' => $KODE_mutasi,
+                    'tgl_mutasi' => $this->get_now(),
+                    'unit_asal' => $request->unit_asal,
+                    'unit_tujuan' => $request->unit_tujuan,
+                    'pic' => auth()->user()->id,
+                    'kode_request' => '',
+                    'kode_tipe' => $request->tipebarang,
+                    'pemberi' => '',
+                    'penerima' => '',
+                    'keterangan' => $keterangan,
+                ];
+                mutasiheader::create($data_mutasi_header);
+            } else {
+                //bon ruangan
+                $KODE_BON = $this->GET_KODE_BON_RUANGAN();
+                $keterangan = 'BON RUANGAN dari ' . $unit_1->nama_unit . ' Ke ' . $unit_2->nama_unit;
+                $data_bon_header = [
+                    'kode_bon_header' => $KODE_BON,
+                    'tgl_bon' => $this->get_now(),
+                    'unit_asal' => $request->unit_asal,
+                    'unit_tujuan' => $request->unit_tujuan,
+                    'pic' => auth()->user()->id,
+                    'kode_request' => '',
+                    'kode_tipe' => $request->tipebarang,
+                    'pemberi' => '',
+                    'penerima' => ''
+                ];
+                model_mutasi_ruangan::create($data_bon_header);
+            }
             foreach ($request->kode_barang as $key => $kode) {
                 $id_sediaan = $request->id_sediaan[$key];
                 $datasediaan = model_stok_persediaan::where('id', $id_sediaan)->get()->first();
                 $barang = MasterBarang::where('kode_barang', $kode)->get()->first();
-                $data_mutasi_detail = [
-                    'kode_mutasi_header' => $KODE_mutasi,
-                    'kode_barang' => $kode,
-                    'qty' =>  $request->qty_mutasi[$key],
-                    'satuan' => $request->satuan[$key],
-                    'qty_kecil' =>  $request->qty_mutasi[$key],
-                    'ed_obat' => $request->ed[$key],
-                    'nomor_batch' => $request->no_batch[$key],
-                    'catatan' => $keterangan,
-                    'sisa_stok_depo_asal' => $datasediaan->stok_sekarang - $request->qty_mutasi[$key],
-                    'nomor_faktur' => $datasediaan->nomor_faktur,
-                    'kode_supplier' => $datasediaan->kode_supplier
-                ];
-                mutasidetail::create($data_mutasi_detail);
-                $data_sediaan = [
-                    'kode_barang' => $kode,
-                    'hpp' =>  $datasediaan->hpp,
-                    'kode_unit' => $request->unit_tujuan,
-                    'ED' => $request->ed[$key],
-                    'nomor_batch' => $request->no_batch[$key],
-                    'stok_awal' => $request->qty_mutasi[$key],
-                    'stok_sekarang' => $request->qty_mutasi[$key],
-                    'nomor_dokumen' => $KODE_mutasi,
-                    'jenis_dokumen' => $keterangan,
-                    'tgl_entry' => $this->get_date(),
-                    'nomor_faktur' => $datasediaan->nomor_faktur,
-                    'kode_supplier' => $datasediaan->kode_supplier
-                ];
-                $data_sediaan = model_stok_persediaan::create($data_sediaan);
+                if ($jenismutasi == 1) {
+                    $data_mutasi_detail = [
+                        'kode_mutasi_header' => $KODE_mutasi,
+                        'kode_barang' => $kode,
+                        'qty' =>  $request->qty_mutasi[$key],
+                        'satuan' => $request->satuan[$key],
+                        'qty_kecil' =>  $request->qty_mutasi[$key],
+                        'ed_obat' => $request->ed[$key],
+                        'nomor_batch' => $request->no_batch[$key],
+                        'catatan' => $keterangan,
+                        'sisa_stok_depo_asal' => $datasediaan->stok_sekarang - $request->qty_mutasi[$key],
+                        'nomor_faktur' => $datasediaan->nomor_faktur,
+                        'kode_supplier' => $datasediaan->kode_supplier
+                    ];
+                    mutasidetail::create($data_mutasi_detail);
+                    $data_sediaan = [
+                        'kode_barang' => $kode,
+                        'hpp' =>  $datasediaan->hpp,
+                        'kode_unit' => $request->unit_tujuan,
+                        'ED' => $request->ed[$key],
+                        'nomor_batch' => $request->no_batch[$key],
+                        'stok_awal' => $request->qty_mutasi[$key],
+                        'stok_sekarang' => $request->qty_mutasi[$key],
+                        'nomor_dokumen' => $KODE_mutasi,
+                        'jenis_dokumen' => $keterangan,
+                        'tgl_entry' => $this->get_date(),
+                        'nomor_faktur' => $datasediaan->nomor_faktur,
+                        'kode_supplier' => $datasediaan->kode_supplier
+                    ];
+                    $data_sediaan = model_stok_persediaan::create($data_sediaan);
+                    $stok_terakhir_2 = DB::table('ti_kartu_stok as a')
+                        ->where('a.kode_barang', $kode)
+                        ->where('a.kode_unit', $request->unit_asal)
+                        ->orderBy('a.NO', 'desc')
+                        ->first();
+                    if ($stok_terakhir_2) {
+                        $stok_current = $stok_terakhir_2->stok_current - $request->qty_mutasi[$key];
+                        $stok_in = 0;
+                        $stok_out = $request->qty_mutasi[$key];
+                        $stok_last = $stok_terakhir_2->stok_current;
+                        $hrgbeli_hist = $stok_terakhir_2->harga_beli_history;
+                        $harga_beli = $stok_terakhir_2->harga_beli;
+                    } else {
+                        $stok_current =  0;
+                        $stok_in = 0;
+                        $stok_out = $request->qty_mutasi[$key];
+                        $stok_last = 0;
+                        $hrgbeli_hist = 0;
+                        $harga_beli = $datasediaan->hpp;
+                    }
+                    $data_ti_kartu_stok_2 = [
+                        'no_dokumen' => $KODE_mutasi,
+                        'no_dokumen_detail' => '',
+                        'no_faktur' => '',
+                        'tgl_stok' => $this->get_now(),
+                        'kode_unit' => $request->unit_asal,
+                        'kode_barang' => $kode,
+                        'stok_last' => $stok_last,
+                        'stok_in' => $stok_in,
+                        'stok_out' => $stok_out,
+                        // 'stok_ed' => '',
+                        'stok_current' => $stok_current,
+                        // 'qty_pending' => '',
+                        // 'stok_global' => '',
+                        'harga_beli' => $harga_beli,
+                        'inputby' => auth()->user()->id,
+                        'ed_obat' => $request->ed[$key],
+                        'keterangan' => $keterangan,
+                        'harga_beli_history' => $hrgbeli_hist,
+                        'id_sediaan' => $datasediaan->id,
+                        // 'no_dokumen' => '',
+                    ];
+                    model_ti_kartu_stok::create($data_ti_kartu_stok_2);
+                    $stok_terakhir = DB::table('ti_kartu_stok as a')
+                        ->where('a.kode_barang', $kode)
+                        ->where('a.kode_unit', $request->unit_tujuan)
+                        ->orderBy('a.NO', 'desc')
+                        ->first();
+                    if ($stok_terakhir) {
+                        $stok_current = $request->qty_mutasi[$key] + $stok_terakhir->stok_current;
+                        $stok_in = $request->qty_mutasi[$key];
+                        $stok_out = 0;
+                        $stok_last = $stok_terakhir->stok_current;
+                        $hrgbeli_hist = $stok_terakhir->harga_beli_history;
+                        $harga_beli = $stok_terakhir->harga_beli;
+                    } else {
+                        $stok_current =  $request->qty_mutasi[$key];
+                        $stok_in =  $request->qty_mutasi[$key];
+                        $stok_out = 0;
+                        $stok_last = 0;
+                        $hrgbeli_hist = 0;
+                        $harga_beli = $datasediaan->hpp;
+                    }
+                    $data_ti_kartu_stok = [
+                        'no_dokumen' => $KODE_mutasi,
+                        'no_dokumen_detail' => '',
+                        'no_faktur' => '',
+                        'tgl_stok' => $this->get_now(),
+                        'kode_unit' => $request->unit_tujuan,
+                        'kode_barang' => $kode,
+                        'stok_last' => $stok_last,
+                        'stok_in' => $stok_in,
+                        'stok_out' => $stok_out,
+                        // 'stok_ed' => '',
+                        'stok_current' => $stok_current,
+                        // 'qty_pending' => '',
+                        // 'stok_global' => '',
+                        'harga_beli' => $harga_beli,
+                        'inputby' => auth()->user()->id,
+                        'ed_obat' => $request->ed[$key],
+                        'keterangan' => $keterangan,
+                        'harga_beli_history' => $hrgbeli_hist,
+                        'id_sediaan' => $data_sediaan->id,
+                        // 'no_dokumen' => '',
+                    ];
+                    model_ti_kartu_stok::create($data_ti_kartu_stok);
+                } else {
+                    $stok_terakhir_2 = DB::table('ti_kartu_stok as a')
+                        ->where('a.kode_barang', $kode)
+                        ->where('a.kode_unit', $request->unit_asal)
+                        ->orderBy('a.NO', 'desc')
+                        ->first();
+                    if ($stok_terakhir_2) {
+                        $stok_current = $stok_terakhir_2->stok_current - $request->qty_mutasi[$key];
+                        $stok_in = 0;
+                        $stok_out = $request->qty_mutasi[$key];
+                        $stok_last = $stok_terakhir_2->stok_current;
+                        $hrgbeli_hist = $stok_terakhir_2->harga_beli_history;
+                        $harga_beli = $stok_terakhir_2->harga_beli;
+                    } else {
+                        $stok_current =  0;
+                        $stok_in = 0;
+                        $stok_out = $request->qty_mutasi[$key];
+                        $stok_last = 0;
+                        $hrgbeli_hist = 0;
+                        $harga_beli = $datasediaan->hpp;
+                    }
+                    $data_ti_kartu_stok_2 = [
+                        'no_dokumen' => $KODE_BON,
+                        'no_dokumen_detail' => '',
+                        'no_faktur' => '',
+                        'tgl_stok' => $this->get_now(),
+                        'kode_unit' => $request->unit_asal,
+                        'kode_barang' => $kode,
+                        'stok_last' => $stok_last,
+                        'stok_in' => $stok_in,
+                        'stok_out' => $stok_out,
+                        // 'stok_ed' => '',
+                        'stok_current' => $stok_current,
+                        // 'qty_pending' => '',
+                        // 'stok_global' => '',
+                        'harga_beli' => $harga_beli,
+                        'inputby' => auth()->user()->id,
+                        'ed_obat' => $request->ed[$key],
+                        'keterangan' => $keterangan,
+                        'harga_beli_history' => $hrgbeli_hist,
+                        'id_sediaan' => $datasediaan->id,
+                        // 'no_dokumen' => '',
+                    ];
+                    model_ti_kartu_stok::create($data_ti_kartu_stok_2);
+                    $data_bon_detail = [
+                        'kode_bon_header' => $KODE_BON,
+                        'kode_barang' => $kode,
+                        'qty' => $request->qty_mutasi[$key],
+                        'satuan' =>  $request->satuan[$key],
+                        'qty_kecil' => $request->qty_mutasi[$key],
+                        'ed_obat' => $request->ed[$key],
+                        'catatan' => '',
+                        'sisa_stok_depo_asal' => $stok_current
+                    ];
+                    bon_detail_ruangan::create($data_bon_detail);
+                }
                 model_stok_persediaan::where('id', $id_sediaan)->update([
                     'stok_sekarang' => $datasediaan->stok_sekarang - $request->qty_mutasi[$key]
                 ]);
-
-
-                $stok_terakhir_2 = DB::table('ti_kartu_stok as a')
-                    ->where('a.kode_barang', $kode)
-                    ->where('a.kode_unit', $request->unit_asal)
-                    ->orderBy('a.NO', 'desc')
-                    ->first();
-                if ($stok_terakhir_2) {
-                    $stok_current = $stok_terakhir_2->stok_current - $request->qty_mutasi[$key];
-                    $stok_in = 0;
-                    $stok_out = $request->qty_mutasi[$key];
-                    $stok_last = $stok_terakhir_2->stok_current;
-                    $hrgbeli_hist = $stok_terakhir_2->harga_beli_history;
-                    $harga_beli = $stok_terakhir_2->harga_beli;
-                } else {
-                    $stok_current =  0;
-                    $stok_in = 0;
-                    $stok_out = $request->qty_mutasi[$key];
-                    $stok_last = 0;
-                    $hrgbeli_hist = 0;
-                    $harga_beli = $datasediaan->hpp;
-                }
-                $data_ti_kartu_stok_2 = [
-                    'no_dokumen' => $KODE_mutasi,
-                    'no_dokumen_detail' => '',
-                    'no_faktur' => '',
-                    'tgl_stok' => $this->get_now(),
-                    'kode_unit' => $request->unit_asal,
-                    'kode_barang' => $kode,
-                    'stok_last' => $stok_last,
-                    'stok_in' => $stok_in,
-                    'stok_out' => $stok_out,
-                    // 'stok_ed' => '',
-                    'stok_current' => $stok_current,
-                    // 'qty_pending' => '',
-                    // 'stok_global' => '',
-                    'harga_beli' => $harga_beli,
-                    'inputby' => auth()->user()->id,
-                    'ed_obat' => $request->ed[$key],
-                    'keterangan' => $keterangan,
-                    'harga_beli_history' => $hrgbeli_hist,
-                    'id_sediaan' => $datasediaan->id,
-                    // 'no_dokumen' => '',
-                ];
-
-                model_ti_kartu_stok::create($data_ti_kartu_stok_2);
-                $stok_terakhir = DB::table('ti_kartu_stok as a')
-                    ->where('a.kode_barang', $kode)
-                    ->where('a.kode_unit', $request->unit_tujuan)
-                    ->orderBy('a.NO', 'desc')
-                    ->first();
-                if ($stok_terakhir) {
-                    $stok_current = $request->qty_mutasi[$key] + $stok_terakhir->stok_current;
-                    $stok_in = $request->qty_mutasi[$key];
-                    $stok_out = 0;
-                    $stok_last = $stok_terakhir->stok_current;
-                    $hrgbeli_hist = $stok_terakhir->harga_beli_history;
-                    $harga_beli = $stok_terakhir->harga_beli;
-                } else {
-                    $stok_current =  $request->qty_mutasi[$key];
-                    $stok_in =  $request->qty_mutasi[$key];
-                    $stok_out = 0;
-                    $stok_last = 0;
-                    $hrgbeli_hist = 0;
-                    $harga_beli = $datasediaan->hpp;
-                }
-                $data_ti_kartu_stok = [
-                    'no_dokumen' => $KODE_mutasi,
-                    'no_dokumen_detail' => '',
-                    'no_faktur' => '',
-                    'tgl_stok' => $this->get_now(),
-                    'kode_unit' => $request->unit_tujuan,
-                    'kode_barang' => $kode,
-                    'stok_last' => $stok_last,
-                    'stok_in' => $stok_in,
-                    'stok_out' => $stok_out,
-                    // 'stok_ed' => '',
-                    'stok_current' => $stok_current,
-                    // 'qty_pending' => '',
-                    // 'stok_global' => '',
-                    'harga_beli' => $harga_beli,
-                    'inputby' => auth()->user()->id,
-                    'ed_obat' => $request->ed[$key],
-                    'keterangan' => $keterangan,
-                    'harga_beli_history' => $hrgbeli_hist,
-                    'id_sediaan' => $data_sediaan->id,
-                    // 'no_dokumen' => '',
-                ];
-                model_ti_kartu_stok::create($data_ti_kartu_stok);
             }
             DB::commit();
             return response()->json(['code' => 'success', 'message' => 'Mutasi berhasil disimpan!']);

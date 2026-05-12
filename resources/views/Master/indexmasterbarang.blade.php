@@ -27,7 +27,7 @@
                 <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modaladdmasterbarang"><i
                         class="bi bi-database-fill-add" style="margin-right:8px "></i>
                     Barang</button>
-                <button class="btn btn-warning" onclick="mappingbarang()"><i class="bi bi-database-fill-add"
+                <button hidden class="btn btn-warning" onclick="mappingbarang()"><i class="bi bi-database-fill-add"
                         style="margin-right:8px "></i>
                     Mapping DPHO BPJS</button>
                 <div class="card mt-3">

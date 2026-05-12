@@ -24,6 +24,10 @@ Route::get('/dashboard', [dashboarController::class, 'Index'])->name('indexdashb
 Route::get('/home', [dashboarController::class, 'Index'])->middleware('guest')->name('home');
 
 
+Route::post('/simpanmappingobatdaridepo', [DepoFarmasiController::class, 'simpanmappingbaru'])->middleware('auth')->name('simpanmappingobatdaridepo');
+
+Route::get('/ambilbarangmappingdepo', [DepoFarmasiController::class, 'ambilbarangmappingdepo'])->middleware('auth')->name('ambilbarangmappingdepo');
+Route::get('/indexmappingbarang2', [DepoFarmasiController::class, 'indexmappingbarang2'])->middleware('auth')->name('indexmappingbarang2');
 Route::get('/indexbuatresep', [DepoFarmasiController::class, 'indexbuatresep'])->middleware('auth')->name('indexbuatresep');
 Route::get('/indexpelayananresep', [DepoFarmasiController::class, 'indexpelayananresep'])->middleware('auth')->name('indexpelayananresep');
 Route::get('/indexdatapelayanan', [DepoFarmasiController::class, 'indexdatapelayanan'])->middleware('auth')->name('indexdatapelayanan');
@@ -72,6 +76,8 @@ Route::get('/indexcreatesep', [VclaimController::class, 'indexcreatesep'])->midd
 Route::post('/createsep', [VclaimController::class, 'createsep'])->middleware('auth')->name('createsep');
 
 
+Route::get('/get.form.retur', [GudangFarmasiController::class, 'formretursupplier'])->middleware('auth')->name('get.form.retur');
+Route::get('/indexretursupplier', [GudangFarmasiController::class, 'indexretursupplier'])->middleware('auth')->name('indexretursupplier');
 Route::get('/gudang/detail-batch', [GudangFarmasiController::class, 'getDetailBatch'])->name('gudang.detailbatch');
 Route::get('/gudang.stokdatabarang', [GudangFarmasiController::class, 'stokdatabarang'])->middleware('auth')->name('gudang.stokdatabarang');
 Route::get('/indexstokbarang', [GudangFarmasiController::class, 'indexstokbarang'])->middleware('auth')->name('indexstokbarang');
@@ -86,11 +92,15 @@ Route::post('/ambilformdetailpo', [GudangFarmasiController::class, 'ambilformdet
 Route::post('/prosesbarangpilihanPO', [GudangFarmasiController::class, 'prosesbarangpilihanPO'])->name('prosesbarangpilihanPO');
 Route::post('/totalhitungpurchaseorder', [GudangFarmasiController::class, 'totalhitungpurchaseorder'])->name('totalhitungpurchaseorder');
 Route::post('/simpanpoheaderfinal', [GudangFarmasiController::class, 'simpanpoheaderfinal'])->name('simpanpoheaderfinal');
-Route::post('/po_header.data', [GudangFarmasiController::class, 'ambildatatgpoheader'])->name('po_header.data');
+Route::GET('/po_header.data', [GudangFarmasiController::class, 'ambildatatgpoheader'])->name('po_header.data');
+Route::GET('/datapoheaderretur', [GudangFarmasiController::class, 'datapoheaderretur'])->name('datapoheaderretur');
+Route::GET('/datadetailporetur', [GudangFarmasiController::class, 'datadetailporetur'])->name('datadetailporetur');
+Route::get('/dataretursupplier', [GudangFarmasiController::class, 'dataretursupplier'])->name('dataretursupplier');
 Route::get('/gudang.data_mutasi', [GudangFarmasiController::class, 'ambildatamutasi'])->name('gudang.data_mutasi');
 Route::post('/gudang.purchase-order.ambil_detail_po', [GudangFarmasiController::class, 'detailpo'])->name('gudang.purchase-order.ambil_detail_po');
 Route::get('/indexstoksediaanbarang', [GudangFarmasiController::class, 'indexstoksediaanbarang'])->name('indexstoksediaanbarang');
 Route::get('/indexmutasibarang', [GudangFarmasiController::class, 'indexmutasibarang'])->name('indexmutasibarang');
+Route::get('/indexbonruangan', [GudangFarmasiController::class, 'indexbonruangan'])->name('indexbonruangan');
 Route::get('/ambildatasediaan', [GudangFarmasiController::class, 'ambildatasediaan'])->name('ambildatasediaan');
 Route::post('/ambilformmutasi', [GudangFarmasiController::class, 'ambilformmutasi'])->name('ambilformmutasi');
 Route::post('/simpanmutasi', [GudangFarmasiController::class, 'simpanmutasi'])->name('simpanmutasi');
@@ -99,6 +109,7 @@ Route::get('/ambilbaranguntukpo', [GudangFarmasiController::class, 'ambilbarang'
 Route::post('/batalkanpo', [GudangFarmasiController::class, 'batalkanpo'])->name('batalkanpo');
 Route::post('/pencariansediaanbarang', [GudangFarmasiController::class, 'pencariansediaanbarang'])->name('pencariansediaanbarang');
 Route::post('/mutasibarang.simpan', [GudangFarmasiController::class, 'simpanmutasibanyak'])->name('mutasibarang.simpan');
+Route::post('/simpanretursupplier', [GudangFarmasiController::class, 'simpanretursupplier'])->name('simpanretursupplier');
 Route::get('/barang/edit/{id}', [MasterController::class, 'ambilbarangedit'])->name('barang/edit/{id}');
 
 

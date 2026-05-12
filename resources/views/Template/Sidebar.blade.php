@@ -28,22 +28,22 @@
                         </li>
                     </ul>
                 </li>
-                <li @IF(auth()->user()->nama == 'GUDANG FARMASI' ) hidden @endif class="nav-header">DEPO FARMASI</li>
-                <li  @IF(auth()->user()->nama == 'GUDANG FARMASI' ) hidden @endif class="nav-item">
+                <li @if (auth()->user()->nama == 'GUDANG FARMASI') hidden @endif class="nav-header">DEPO FARMASI</li>
+                <li @if (auth()->user()->nama == 'GUDANG FARMASI') hidden @endif class="nav-item">
                     <a hidden href="{{ route('indexbuatresep') }}"
                         class="nav-link @if ($menu == 'indexbuatresep') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
                         <p>Buat Resep</p>
                     </a>
                 </li>
-                <li  @IF(auth()->user()->nama == 'GUDANG FARMASI' ) hidden @endif class="nav-item">
+                <li @if (auth()->user()->nama == 'GUDANG FARMASI') hidden @endif class="nav-item">
                     <a href="{{ route('indexpelayananresep') }}"
                         class="nav-link @if ($menu == 'indexpelayananresep') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
                         <p>Pelayanan Resep</p>
                     </a>
                 </li>
-                <li @IF(auth()->user()->nama == 'GUDANG FARMASI' ) hidden @endif class="nav-item">
+                <li @if (auth()->user()->nama == 'GUDANG FARMASI') hidden @endif class="nav-item">
                     <a href="{{ route('indexdatapelayanan') }}"
                         class="nav-link @if ($menu == 'indexdatapelayanan') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
@@ -57,50 +57,57 @@
                         <p>Riwayat Pelayanan</p>
                     </a>
                 </li>
-                <li @IF(auth()->user()->nama == 'GUDANG FARMASI' ) hidden @endif class="nav-item">
+                <li @if (auth()->user()->nama == 'GUDANG FARMASI') hidden @endif class="nav-item">
                     <a href="{{ route('indexriwayatretur') }}"
                         class="nav-link @if ($menu == 'indexriwayatretur') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
                         <p>Riwayat Retur Pelayanan</p>
                     </a>
                 </li>
-                <li @IF(auth()->user()->nama == 'GUDANG FARMASI' ) hidden @endif class="nav-item">
+                <li @if (auth()->user()->nama == 'GUDANG FARMASI') hidden @endif class="nav-item">
                     <a href="{{ route('indexriwayatkartustok') }}"
                         class="nav-link @if ($menu == 'indexriwayatkartustok') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
                         <p>Riwayat Kartu Stok</p>
                     </a>
                 </li>
-                <li @IF(auth()->user()->nama == 'GUDANG FARMASI' ) hidden @endif class="nav-header">Apotek Online</li>
-                <li @IF(auth()->user()->nama == 'GUDANG FARMASI' ) hidden @endif class="nav-item">
+                <li class="nav-item">
+                    <a href="{{ route('indexmappingbarang2') }}"
+                        class="nav-link @if ($menu == 'indexmappingbarang2') active @endif">
+                        <i class="nav-icon bi bi-file-bar-graph-fill"></i>
+                        <p>Mapping Master Barang</p>
+                    </a>
+                </li>
+                <li @if (auth()->user()->nama == 'GUDANG FARMASI') hidden @endif class="nav-header">Apotek Online</li>
+                <li @if (auth()->user()->nama == 'GUDANG FARMASI') hidden @endif class="nav-item">
                     <a href="{{ route('indexcarisepaptonline') }}"
                         class="nav-link @if ($menu == 'indexcarisep_apotek') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
                         <p>Cari SEP</p>
                     </a>
                 </li>
-                <li @IF(auth()->user()->nama == 'GUDANG FARMASI' ) hidden @endif class="nav-item">
+                <li @if (auth()->user()->nama == 'GUDANG FARMASI') hidden @endif class="nav-item">
                     <a href="{{ route('indexdaftarresep') }}"
                         class="nav-link @if ($menu == 'indexdaftarresep') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
                         <p>Daftar Resep</p>
                     </a>
                 </li>
-                <li @IF(auth()->user()->nama == 'GUDANG FARMASI' ) hidden @endif class="nav-item">
+                <li @if (auth()->user()->nama == 'GUDANG FARMASI') hidden @endif class="nav-item">
                     <a href="{{ route('indexriwayatpelayananonline') }}"
                         class="nav-link @if ($menu == 'indexriwayatpelayananonline') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
                         <p>Riwayat Pelayanan</p>
                     </a>
                 </li>
-                <li @IF(auth()->user()->nama == 'GUDANG FARMASI' ) hidden @endif class="nav-item">
+                <li @if (auth()->user()->nama == 'GUDANG FARMASI') hidden @endif class="nav-item">
                     <a href="{{ route('indexreferensidpho') }}"
                         class="nav-link @if ($menu == 'indexreferensidpho') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
                         <p>Referensi DPHO</p>
                     </a>
                 </li>
-                <li @IF(auth()->user()->nama == 'GUDANG FARMASI' ) hidden @endif class="nav-item">
+                <li @if (auth()->user()->nama == 'GUDANG FARMASI') hidden @endif class="nav-item">
                     <a href="{{ route('indexdataklaim') }}"
                         class="nav-link @if ($menu == 'indexdataklaim') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
@@ -114,51 +121,58 @@
                         <p>Rekap Peserta PRB</p>
                     </a>
                 </li>
-                <li @IF(auth()->user()->nama == 'GUDANG FARMASI' ) hidden @endif class="nav-header">Vclaim</li>
-                <li @IF(auth()->user()->nama == 'GUDANG FARMASI' ) hidden @endif class="nav-item">
+                <li @if (auth()->user()->nama == 'GUDANG FARMASI') hidden @endif class="nav-header">Vclaim</li>
+                <li @if (auth()->user()->nama == 'GUDANG FARMASI') hidden @endif class="nav-item">
                     <a href="{{ route('indexcreatesep') }}"
                         class="nav-link @if ($menu == 'indexcreatesep') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
                         <p>Create SEP</p>
                     </a>
                 </li>
-                <li @if(auth()->user()->nama != 'GUDANG FARMASI') hidden @endif  class="nav-header">Gudang Farmasi</li>
-                <li @if(auth()->user()->nama != 'GUDANG FARMASI') hidden @endif  class="nav-item">
+                <li @if (auth()->user()->nama != 'GUDANG FARMASI') hidden @endif class="nav-header">Gudang Farmasi</li>
+                <li @if (auth()->user()->nama != 'GUDANG FARMASI') hidden @endif class="nav-item">
                     <a href="{{ route('indexstokbarang') }}"
                         class="nav-link @if ($menu == 'indexstokbarang') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
                         <p>Data Stok Barang</p>
                     </a>
                 </li>
-                <li @if(auth()->user()->nama != 'GUDANG FARMASI') hidden @endif  class="nav-item">
+                <li @if (auth()->user()->nama != 'GUDANG FARMASI') hidden @endif class="nav-item">
                     <a href="{{ route('indexstoksediaanbarang') }}"
                         class="nav-link @if ($menu == 'indexstoksediaanbarang') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
                         <p>Stok Sediaan Barang</p>
                     </a>
                 </li>
-                <li @if(auth()->user()->nama != 'GUDANG FARMASI') hidden @endif  class="nav-item">
+                <li @if (auth()->user()->nama != 'GUDANG FARMASI') hidden @endif class="nav-item">
                     <a href="{{ route('indexterimabarangpo') }}"
                         class="nav-link @if ($menu == 'indexterimabarangpo') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
                         <p>Faktur Pembelian</p>
                     </a>
                 </li>
-                <li @if(auth()->user()->nama != 'GUDANG FARMASI') hidden @endif  class="nav-item">
+                <li @if (auth()->user()->nama != 'GUDANG FARMASI') hidden @endif class="nav-item">
                     <a href="{{ route('indexmutasibarang') }}"
                         class="nav-link @if ($menu == 'indexmutasibarang') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
                         <p>Mutasi Barang</p>
                     </a>
                 </li>
-                <li @if(auth()->user()->nama != 'GUDANG FARMASI') hidden @endif  class="nav-item">
-                    <a href="{{ route('indexterimabarangpo') }}"
-                        class="nav-link @if ($menu == 'indexmutasistok') active @endif">
+                <li @if (auth()->user()->nama != 'GUDANG FARMASI') hidden @endif class="nav-item">
+                    <a href="{{ route('indexbonruangan') }}"
+                        class="nav-link @if ($menu == 'indexbonruangan') active @endif">
+                        <i class="nav-icon bi bi-file-bar-graph-fill"></i>
+                        <p>BON Ruangan</p>
+                    </a>
+                </li>
+                <li @if (auth()->user()->nama != 'GUDANG FARMASI') hidden @endif class="nav-item">
+                    <a href="{{ route('indexretursupplier') }}"
+                        class="nav-link @if ($menu == 'indexretursupplier') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
                         <p>Retur Ke Supplier</p>
                     </a>
                 </li>
-                <li @if(auth()->user()->nama != 'GUDANG FARMASI') hidden @endif  class="nav-item">
+                <li hidden @if (auth()->user()->nama != 'GUDANG FARMASI') hidden @endif class="nav-item">
                     <a href="{{ route('indexterimabarangpo') }}"
                         class="nav-link @if ($menu == 'indexmutasistok') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
@@ -172,51 +186,51 @@
                         <p>Riwayat Mutasi Barang</p>
                     </a>
                 </li>
-                <li @if(auth()->user()->nama != 'GUDANG FARMASI') hidden @endif  class="nav-item">
+                <li @if (auth()->user()->nama != 'GUDANG FARMASI') hidden @endif class="nav-item">
                     <a href="{{ route('indexriwayatkartustok') }}"
                         class="nav-link @if ($menu == 'indexriwayatkartustok') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
                         <p>Riwayat Kartu Stok</p>
                     </a>
                 </li>
-                <li @if(auth()->user()->nama != 'GUDANG FARMASI') hidden @endif  class="nav-item">
+                <li @if (auth()->user()->nama != 'GUDANG FARMASI') hidden @endif class="nav-item">
                     <a href="{{ route('indexmasterbarang') }}"
                         class="nav-link @if ($menu == 'indexmasterbarang') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
                         <p>Master Barang</p>
                     </a>
                 </li>
-                <li @if(auth()->user()->nama != 'GUDANG FARMASI') hidden @endif  class="nav-item">
+                <li @if (auth()->user()->nama != 'GUDANG FARMASI') hidden @endif class="nav-item">
                     <a href="{{ route('indexmastersupplier') }}"
                         class="nav-link @if ($menu == 'indexmastersupplier') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
                         <p>Master Supplier Obat</p>
                     </a>
                 </li>
-                <li hidden  class="nav-header">Data Master</li>
-                <li hidden  class="nav-item">
+                <li hidden class="nav-header">Data Master</li>
+                <li hidden class="nav-item">
                     <a href="{{ route('indexmasterdpho') }}"
                         class="nav-link @if ($menu == 'indexmasterdpho') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
                         <p>Master DPHO</p>
                     </a>
                 </li>
-                <li hidden  class="nav-item">
+                <li hidden class="nav-item">
                     <a href="{{ route('indexmappingbarang') }}"
                         class="nav-link @if ($menu == 'indexmappingbarang') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
                         <p>Mapping Master Barang</p>
                     </a>
                 </li>
-                <li  hidden class="nav-item">
+                <li hidden class="nav-item">
                     <a href="{{ route('indexmasterobatbpjs') }}"
                         class="nav-link @if ($menu == 'indexmasterobatbpjs') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
                         <p>Master Obat Bpjs</p>
                     </a>
                 </li>
-                <li @if(auth()->user()->nama != 'GUDANG FARMASI') hidden @endif  class="nav-header">Data Laporan</li>
-                <li @if(auth()->user()->nama != 'GUDANG FARMASI') hidden @endif  class="nav-item">
+                <li @if (auth()->user()->nama != 'GUDANG FARMASI') hidden @endif class="nav-header">Data Laporan</li>
+                <li @if (auth()->user()->nama != 'GUDANG FARMASI') hidden @endif class="nav-item">
                     <a href="{{ route('indexperencanaan') }}"
                         class="nav-link @if ($menu == 'indexperencanaan') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>

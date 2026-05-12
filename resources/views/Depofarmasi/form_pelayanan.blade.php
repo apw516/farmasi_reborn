@@ -718,7 +718,8 @@
             '<label class="form-label font-weight-bold small">Iterasi</label>' +
             '<select class="form-select" name="iterasi_obat">' +
             '<option value="0">Non iterasi</option>' +
-            '<option value="1">Iterasi</option>' +
+            '<option value="1">Iterasi 1 x</option>' +
+            '<option value="2">Iterasi 2 x</option>' +
             '</select>' +
             '</div>' +
 

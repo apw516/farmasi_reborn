@@ -6,7 +6,7 @@
             <!--begin::Row-->
             <div class="row">
                 <div class="col-sm-6">
-                    <h3 class="mb-0">Mutasi Barang</h3>
+                    <h3 class="mb-0">@if($menu == 'indexbonruangan') Bon Ruangan @else Mutasi Barang @endif</h3>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-end">
@@ -42,6 +42,8 @@
                                             (Akhir)</label>
                                         <input type="date" class="form-control form-control-sm" id="tanggalakhir"
                                             name="tanggalakhir" value="{{ $date_end }}">
+                                        <input hidden type="text" class="form-control form-control-sm" id="keterangan"
+                                            name="keterangan" value="@if($menu == 'indexbonruangan') 1 @else 2 @endif">
                                     </div>
                                     <div class="col-md-2 col-lg-1">
                                         <div class="d-grid">
@@ -52,7 +54,7 @@
                                     </div>
                                     <div class="col-md-4 col-lg-7 text-end">
                                         <a class="btn btn-success btn-sm px-3" onclick="ambilformheader()">
-                                            <i class="bi bi-plus-circle me-1"></i> Buat Mutasi Baru (Header & Detail)
+                                            <i class="bi bi-plus-circle me-1"></i> @if($menu == 'indexbonruangan')Buat Bon Ruangan @else Buat Mutasi Baru (Header & Detail) @endif
                                         </a>
                                     </div>
                                 </form>
@@ -96,7 +98,7 @@
                     <div class="v_form_header mt-2">
                         <div class="card mb-3">
                             <div class="card-header bg-primary text-white">
-                                <h6 class="mb-0"><i class="bi bi-arrow-left-right me-2"></i>Form Mutasi Header</h6>
+                                <h6 class="mb-0"><i class="bi bi-arrow-left-right me-2"></i>Form @if($menu == 'indexbonruangan') Bon Ruangan @else Mutasi Header @endif </h6>
                             </div>
                             <div class="card-body">
                                 <div class="row g-3">
@@ -121,12 +123,29 @@
                                     </div>
                                     <div hidden class="col-md-3">
                                         <label class="form-label small fw-bold">Keterangan Mutasi</label>
-                                        <input type="text" class="form-control form-control-sm" name="keterangan"
-                                            placeholder="Contoh: Stok Mingguan">
+                                        <select class="form-select form-select-sm select2" name="keteranganmutasi"
+                                            id="keteranganmutasi">
+                                            {{-- <option value="">- SILAHKAN PILIH -</option> --}}
+                                            <option value="1" @if ($menu != 'indexbonruangan') selected @endif>MUTASI
+                                                BARANG</option>
+                                            <option value="2" @if ($menu == 'indexbonruangan') selected @endif>BON
+                                                RUANGAN</option>
+                                        </select>
                                     </div>
                                     <div class="col-md-3">
-                                        <button style="margin-top:30px" type="button" class="btn btn-success caridataobat"
-                                            data-bs-toggle="modal" data-bs-target="#modalcariobat" onclick="cariobat()">
+                                        <label class="form-label small fw-bold">Tipe Barang</label>
+                                        <select class="form-select form-select-sm select2" name="tipebarang"
+                                            id="tipebarang">
+                                            <option value="">- SILAHKAN PILIH -</option>
+                                            @foreach($tipe as $tb)
+                                            <option value="{{ $tb->kode_tipe }}">{{ $tb->nama_tipe }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <button style="margin-top:30px" type="button"
+                                            class="btn btn-success caridataobat" data-bs-toggle="modal"
+                                            data-bs-target="#modalcariobat" onclick="cariobat()">
                                             <i class="bi bi-search"></i>
                                         </button>
                                     </div>
@@ -136,7 +155,7 @@
 
                         <div class="card">
                             <div class="card-header bg-light fw-bold text-secondary">
-                                Detail Barang Mutasi
+                                Detail Barang @if($menu == 'indexbonruangan') Bon Ruangan @else Mutasi @endif
                             </div>
                             <div class="card-body">
 
@@ -178,8 +197,8 @@
                             <div class="card-footer text-end">
                                 <button type="button" class="btn btn-danger btn-sm me-2">Batal</button>
                                 <button type="button" class="btn btn-success btn-sm px-4"
-                                    onclick="simpanmutasi()">Simpan
-                                    Mutasi</button>
+                                    onclick="simpanmutasi()">Simpan @if($menu == 'indexbonruangan') Bon Ruangan @else
+                                    Mutasi @endif</button>
                             </div>
                         </div>
                     </div>
@@ -320,6 +339,7 @@
                         // Kirim data tambahan ke server
                         d.tanggalawal = $('#tanggalawal').val();
                         d.tanggalakhir = $('#tanggalakhir').val();
+                        d.keterangan = $('#keterangan').val();
                     }
                 },
                 columns: [{
@@ -331,11 +351,11 @@
                         className: 'text-center'
                     },
                     {
-                        data: 'kode_mutasi_header',
+                        data: 'kode_header',
                         render: function(data, type, row) {
                             return `<div>
                             <span class="fw-bold text-primary" style="font-size:16px">${data}</span><br>
-                            <small class="text-bold" style="font-size:16px"><i class="bi bi-calendar3"></i> ${row.tgl_mutasi}</small>
+                            <small class="text-bold" style="font-size:16px"><i class="bi bi-calendar3"></i> ${row.tgl_header}</small>
                         </div>`;
                         }
                     },
@@ -351,6 +371,7 @@
                     },
                     {
                         data: 'keterangan', // Ini yang tadi berisi detail barang
+                        searchable: false, // <-- Tambahkan ini untuk mengecualikan dari pencarian
                         render: function(data) {
                             if (!data) return '-';
                             // Ubah pemisah <br> menjadi format badge jika perlu
@@ -377,6 +398,7 @@
                 // Cek validasi tanggal
                 let tglAwal = $('#tanggalawal').val();
                 let tglAkhir = $('#tanggalakhir').val();
+                let keterangan = $('#keterangan').val();
 
                 if (!tglAwal || !tglAkhir) {
                     Swal.fire('Filter Gagal',
@@ -398,12 +420,13 @@
 
         function cariobat() {
             unit_asal = $('#unit_asal').val()
+            tipebarang = $('#tipebarang').val()
             $.ajax({
                 type: 'POST',
                 url: '{{ route('pencariansediaanbarang') }}', // Buat route & controller ini
                 data: {
                     _token: "{{ csrf_token() }}",
-                    unit_asal
+                    unit_asal,tipebarang
                 },
                 error: function() {
                     Swal.fire('Error', 'Gagal mengambil detail Purchase Order.', 'error');

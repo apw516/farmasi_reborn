@@ -35,7 +35,7 @@ class VclaimController extends Controller
             "request" => [
                 "t_sep" => [
                     "noKartu" => "0002083363874",
-                    "tglSep" => "2026-04-17",
+                    "tglSep" => "2026-05-08",
                     "ppkPelayanan" => "1018R001",
                     "jnsPelayanan" => "2",
                     "klsRawat" => [

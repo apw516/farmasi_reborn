@@ -128,6 +128,7 @@ class ApotekOnlineController extends dashboarController
             'TglAkhir' => $akhir,
         ];
         $DATA = $v->daftar_resep($data);
+        // DD($DATA);
         try {
             if ($DATA->metaData->code == 200 && $DATA->metaData->message == 'OK') {
                 return view('apotekonline.tabel_daftar_resep', compact([
@@ -203,7 +204,6 @@ class ApotekOnlineController extends dashboarController
         $rm = $request->rm;
         $data1 = db::select("SELECT kode_kunjungan,tgl_masuk,fc_nama_unit1(kode_unit) AS unit_tujuan,fc_NAMA_PARAMEDIS1(kode_paramedis) AS nama_dokter
         FROM ts_kunjungan WHERE  no_rm = ? ORDER BY kode_kunjungan DESC", [$rm]);
-
         // dd($data1);
         $data = db::select("SELECT a.`kode_kunjungan`
         ,a.`tgl_masuk`

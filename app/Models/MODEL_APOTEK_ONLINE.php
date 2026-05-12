@@ -265,6 +265,7 @@ class MODEL_APOTEK_ONLINE extends Model
         $data = json_encode($dataobat);
         $url = 'https://apijkn-dev.bpjs-kesehatan.go.id/apotek-rest-dev/sjpresep/v3/insert';
         $signature = $this->signature();
+        // DD($data);
         try {
             $response = $client->request('POST', $url, [
                 'headers' => $signature,
